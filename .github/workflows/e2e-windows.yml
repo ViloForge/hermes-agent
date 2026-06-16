@@ -150,7 +150,8 @@ jobs:
           Copy-Item -Path "$ahkDir\*" -Destination test-bins\autohotkey -Recurse -Force
 
           # ffmpeg : just install into dir
-          winget install -e --id Gyan.FFmpeg --silent --accept-source-agreements --accept-package-agreements --disable-interactivity --location test-bins\ffmpeg
+          winget install -e --id Gyan.FFmpeg --silent --accept-source-agreements --accept-package-agreements --disable-interactivity --location ffmpeg_dir
+          Copy-Item -Path "ffmpeg_dir\*\*" -Destination test-bins\ffmpeg -Recurse -Force
 
       - name: Add test-bins to PATH
         shell: pwsh
