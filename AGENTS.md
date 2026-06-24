@@ -54,6 +54,12 @@ license.** Never rebrand the upstream-owned surface — it is not ours:
   string; corrupting it breaks model resolution.
 - **`nousresearch.com` URLs** and the **MIT license author "Nous Research"** (legal
   attribution).
+- **`NOUS_*` env prefix** (~40 vars) and Nous auth-protocol identifiers
+  (`NOUS_CLIENT_ID`/OAuth GUIDs, `x-nous-credits-*` headers) — the Nous provider's
+  config + wire contract, distinct from our `HERMES_*`.
+- **Live Nous endpoints** (`inference-api.nousresearch.com`, `portal.nousresearch.com`)
+  and the trap that `hermes` inside `hermes-agent.nousresearch.com` is upstream infra,
+  **not** our brand — don't rewrite it. Also: `psyche`/`atropos` (Nous projects).
 
 Full enumeration, tiers, and exclusion patterns live in the rebrand plan
 (`docs/viloforge/plans/`); this boundary is **ADR-0003 D4** (Constitutional).

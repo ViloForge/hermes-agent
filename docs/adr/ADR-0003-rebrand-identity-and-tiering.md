@@ -65,16 +65,51 @@ high), each human-gated. Tiers are *categories of `hermes`*, not directories:
 
 ### D4 — Constitutional do-not-touch boundary
 The following are upstream property, **not ours** — never rebranded; any automated
-pass MUST exclude them, and a deterministic exclusion allowlist gates the work:
-- **Nous Portal provider & auth** — `plugins/*/nous/`, `hermes_cli/nous_*`,
-  `proxy/adapters/nous_portal.py`, `agent/portal_tags.py`, `agent/nous_rate_guard.py`.
-- **Nous Hermes LLM model IDs** — `hermes-3`, `hermes-4`, `nousresearch/...` (~140
-  lines). `hermes_cli/model_switch.py::is_nous_hermes_non_agentic()` depends on the
-  literal string; corrupting it breaks model resolution + the non-agentic guard.
-- **`nousresearch.com` URLs** (390 files) and the **MIT license author "Nous
-  Research"** (legal attribution).
+pass MUST exclude them, and a deterministic exclusion allowlist gates the work.
+*(Expanded 2026-06-24 after a six-lens adversarial completeness sweep; categories
+4–8 were found missing from the first draft.)*
+
+1. **Nous Portal provider & auth** — `plugins/*/nous/`, `hermes_cli/nous_*`,
+   `proxy/adapters/nous_portal.py`, `agent/portal_tags.py`, `agent/nous_rate_guard.py`.
+2. **Nous Hermes LLM model IDs** — `hermes-3`, `hermes-4` (and variants caught by
+   `hermes-[0-9]`: `hermes-2`, `deephermes-3`, `hermes-4.3-36b`, …), `nousresearch/...`
+   (~140 lines). `hermes_cli/model_switch.py::is_nous_hermes_non_agentic()` depends
+   on the literal string; corrupting it breaks model resolution + the non-agentic guard.
+3. **`nousresearch.com` doc URLs** (390 files) and the **MIT license author "Nous
+   Research"** (`LICENSE`, `pyproject.toml`/`apps/desktop/package.json` author fields —
+   legal attribution).
+4. **`NOUS_*` environment-variable prefix** (~40 vars: `NOUS_API_KEY`, `NOUS_CLIENT_ID`,
+   `NOUS_PORTAL_URL`, `NOUS_INFERENCE_URL`, `NOUS_SCOPE`, …). This is the Nous
+   provider's config namespace — distinct from our `HERMES_*` (D2). Never rename it.
+5. **Live Nous service endpoints** — hardcoded hosts that are functional API/billing
+   infra, not links: `inference-api.nousresearch.com` (`_NOUS_DEFAULT_BASE_URL` in
+   `agent/auxiliary_client.py`, `agent/usage_pricing.py`), `portal.nousresearch.com`
+   (`DEFAULT_NOUS_PORTAL_URL` in `hermes_cli/auth.py`), plus `inference.nousresearch.com`,
+   `chat.nousresearch.com`, `firecrawl-gateway.nousresearch.com`. **Trap:** the
+   `hermes` token inside `hermes-agent.nousresearch.com` (266 refs),
+   `setup.hermes-agent.nousresearch.com`, and `docs-hermes--agent.nousresearch.com`
+   is **upstream infra, not our brand** — a Tier-1/2 "Hermes→ViloForge" replace must
+   not rewrite it. *(Replacing these endpoints with our own is a deliberate
+   infra/product decision under ADR-0002's leash phase — not a rebrand find/replace.)*
+6. **Nous auth-protocol identifiers** — the OAuth `NOUS_CLIENT_ID` and its hardcoded
+   client-id GUIDs (e.g. `9d1c250a-e61b-44d9-88ed-5944d1962f5e`), `NOUS_SCOPE` /
+   invoke scopes, and the **`x-nous-credits-*` HTTP response headers** (the wire
+   contract with Nous's billing API). Renaming any breaks OAuth or credit parsing.
+7. **Sibling Nous project names** — `psyche`, `atropos` (Nous Research projects, not
+   generic English, not ours; e.g. `github.com/NousResearch/atropos`).
+8. **Upstream contacts & community** — `@nousresearch.com` emails (esp.
+   `security@nousresearch.com` — the disclosure address must not be rebranded to
+   imply *we* handle Nous's reports), `discord.gg/nousresearch`, `github.com/NousResearch/*`.
+
 - **Exclusion patterns** for any sed/codemod: `hermes-[0-9]`, `nous[-_/]hermes`,
-  `nousresearch`, `plugins/*/nous/**`.
+  `nousresearch`, `plugins/*/nous/**`, **`NOUS_[A-Z]`**, **`x-nous-`**, **`psyche`**,
+  **`atropos`**.
+
+### D5 — Flagged legal special-case (not do-not-touch; requires deliberate change)
+`apps/desktop/package.json` declares `"legalTrademarks": "Hermes"`. We must **change
+it to the ViloForge mark or clear it** — the rebrand must not ship a desktop app that
+continues to claim "Hermes" as a trademark. Handle in Tier 2; called out here because
+it is a legal field, not cosmetic.
 
 ## Consequences
 

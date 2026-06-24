@@ -16,7 +16,9 @@
 
 1. **Build the Tier-4 exclusion allowlist** from ADR-0003 D4 — the globset/regex an
    automated pass must skip: `hermes-[0-9]`, `nous[-_/]hermes`, `nousresearch`,
-   `plugins/*/nous/**`. Nothing is replaced until this exists and is tested.
+   `plugins/*/nous/**`, `NOUS_[A-Z]`, `x-nous-`, `psyche`, `atropos`. Nothing is
+   replaced until this exists and is tested. Also handle the D5 legal special-case
+   (`apps/desktop/package.json` `legalTrademarks`) deliberately in Tier 2.
 2. **Wire the `upstream` remote** (per ADR-0002) and **sync once to upstream HEAD**
    before diverging (ADR-0002 Decision point 4): `git remote add upstream
    https://github.com/NousResearch/hermes-agent.git && git fetch upstream`. Create
