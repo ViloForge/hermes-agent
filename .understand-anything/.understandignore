@@ -1,0 +1,63 @@
+# INCREMENTAL ADD pass: analyze the remaining modules (apps, gateway, web,
+# website, plugins, tools, skills, optional-skills, acp_*, tui_gateway, cron,
+# providers, scripts). The core (root *.py, hermes_cli/, ui-tui/) was already
+# analyzed and is merged back in separately — exclude it here to avoid re-work.
+
+# ---- Already-analyzed core (exclude from this pass) ----
+# NOTE: agent/ is NOT excluded — it was missed in pass 1 and must be analyzed.
+/*.py
+hermes_cli/
+ui-tui/
+
+# ---- Working / scratch dirs (not project modules) ----
+.understand-anything/
+scratchpad/
+
+# ---- Always out of scope ----
+tests/
+docs/
+locales/
+nix/
+packaging/
+assets/
+datagen-config-examples/
+optional-mcps/
+docker/
+.github/
+.plans/
+plans/
+
+# ---- Build artifacts / vendored deps ----
+**/node_modules/
+**/dist/
+**/build/
+**/.direnv/
+**/target/
+**/.next/
+**/out/
+
+# ---- Tests inside kept scope ----
+**/test/
+**/tests/
+**/__tests__/
+**/__mocks__/
+**/e2e/
+*.test.ts
+*.test.tsx
+*.test.js
+*.test.jsx
+*.spec.ts
+*.spec.tsx
+*.spec.js
+test_*.py
+*_test.py
+conftest.py
+
+# ---- Lockfiles / generated ----
+package-lock.json
+uv.lock
+pnpm-lock.yaml
+yarn.lock
+Cargo.lock
+*.min.js
+*.map
