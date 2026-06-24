@@ -18,7 +18,14 @@
    automated pass must skip: `hermes-[0-9]`, `nous[-_/]hermes`, `nousresearch`,
    `plugins/*/nous/**`, `NOUS_[A-Z]`, `x-nous-`, `psyche`, `atropos`. Nothing is
    replaced until this exists and is tested. Also handle the D5 legal special-case
-   (`apps/desktop/package.json` `legalTrademarks`) deliberately in Tier 2.
+   (`apps/desktop/package.json` `legalTrademarks`) deliberately in Tier 2. — ✅
+   **done**: `docs/viloforge/rebrand/` (`exclusions.py` guard + `scan.py` E2E
+   self-check + `test_exclusions.py` 15 contract tests + README). Adds the D4.5
+   trap host patterns and a separate opt-in Tier-3-skeleton layer. Validated at
+   HEAD `6d0970c5a`: scan coverage matches the measured blast-radius exactly
+   (hermes-[0-9] 49 files, nousresearch 421, NOUS_* 32 vars, psyche 15, atropos
+   12, +10 whole-file path excludes); trap report flags 902 brand-near-protected
+   lines for hunk-by-hunk review.
 2. **Wire the `upstream` remote** (per ADR-0002) and **sync once to upstream HEAD**
    before diverging (ADR-0002 Decision point 4): `git remote add upstream
    https://github.com/NousResearch/hermes-agent.git && git fetch upstream`. Create
