@@ -57,6 +57,23 @@
   carries the Nous name — change the product wording, confirm it doesn't touch a
   model-ID path (it doesn't). Flag in review rather than auto-replacing.
 
+### Tier 1 — sliced (the `website/`+`web/` surface is 707 files, too big for one PR)
+
+Brand mapping (operator-decided): `Hermes Agent`→`ViloForge Agent`, standalone
+`Hermes`→`ViloForge`, `⚕ NOUS HERMES`→`⚕ VILOFORGE`, ASCII logo→`VILOFORGE AGENT`.
+Attribution **preserved** + an explicit fork notice added to each README (operator
+chose "add a fork notice now"). Scope includes docstrings/comments (operator choice).
+
+- **Tier 1a — core chrome** — ✅ **done** (PR #7): 4 READMEs + `apps/desktop/README.md`
+  + `hermes_cli/banner.py` + `cli.py`. 92 guard-checked replacements, hunk-reviewed;
+  net protected-token change ≥ 0; 35 banner/skin tests updated + green. The `cli.py`
+  "NOUS HERMES" edge case handled (→ VILOFORGE).
+- **Tier 1b — `web/` dashboard UI strings** — pending (i18n + components).
+- **Tier 1c — `website/` docs prose** — pending (hundreds of `.md`; mostly mechanical;
+  EXCLUDE `website/src/data/userStories.json` — model refs).
+- **Deferred bits:** `assets/banner.png` redraw (image); native Urdu fork-notice
+  translation (currently English with a TODO).
+
 ## Tier 2 — Package / CLI / Docker / CI identity (medium; deliberate, per-file review)
 
 - **`pyproject.toml`:** `name = "hermes-agent"` → `viloforge-agent`; ~20 extras
