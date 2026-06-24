@@ -1,31 +1,25 @@
-# INCREMENTAL ADD pass: analyze the remaining modules (apps, gateway, web,
-# website, plugins, tools, skills, optional-skills, acp_*, tui_gateway, cron,
-# providers, scripts). The core (root *.py, hermes_cli/, ui-tui/) was already
-# analyzed and is merged back in separately — exclude it here to avoid re-work.
-
-# ---- Already-analyzed core (exclude from this pass) ----
-# NOTE: agent/ is NOT excluded — it was missed in pass 1 and must be analyzed.
-/*.py
-hermes_cli/
-ui-tui/
+# FULL REBUILD scope (post 745-commit upstream sync, PR #4).
+# Include all source across the tree: root *.py, hermes_cli/, ui-tui/, agent/,
+# apps/, gateway/, web/, website/, plugins/, tools/, skills/, optional-skills/,
+# acp_*, tui_gateway/, cron/, providers/, scripts/.
+# EXCLUDE: tests/, markdown prose/docs, build artifacts, scratch/working dirs.
 
 # ---- Working / scratch dirs (not project modules) ----
 .understand-anything/
 scratchpad/
 
-# ---- Always out of scope ----
-tests/
+# ---- Out of scope (docs prose, infra-only, vendored config trees) ----
 docs/
 locales/
 nix/
 packaging/
-assets/
 datagen-config-examples/
 optional-mcps/
 docker/
 .github/
 .plans/
 plans/
+assets/
 
 # ---- Build artifacts / vendored deps ----
 **/node_modules/
@@ -36,7 +30,8 @@ plans/
 **/.next/
 **/out/
 
-# ---- Tests inside kept scope ----
+# ---- Tests (excluded per scope intent) ----
+tests/
 **/test/
 **/tests/
 **/__tests__/
@@ -52,6 +47,11 @@ plans/
 test_*.py
 *_test.py
 conftest.py
+
+# ---- Markdown prose (excluded per scope intent) ----
+*.md
+*.mdx
+*.rst
 
 # ---- Lockfiles / generated ----
 package-lock.json
