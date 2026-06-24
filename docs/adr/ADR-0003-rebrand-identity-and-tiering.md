@@ -1,15 +1,13 @@
 # ADR-0003: Rebrand identity, tiering, and the do-not-touch boundary
 
-- **Status:** Proposed
-- **Date:** 2026-06-24
+- **Status:** Accepted
+- **Date:** 2026-06-24 (ratified 2026-06-24, after the D4 adversarial completeness sweep)
 - **Deciders:** operator + Claude
 - **Constitutional:** yes (the do-not-touch boundary and the tier ordering bind every rebrand edit)
 
-> **Proposed** — most of this ADR records decisions the operator *already made* in
-> session (brand name, deprecated aliases) plus the verified do-not-touch boundary
-> already shipped in `AGENTS.md`. It is `Proposed` only so the operator gives the
-> synthesized whole one look before it becomes immutable + Constitutional. Ratify by
-> accepting (or editing) this record.
+> **Accepted** — ratified by the operator on 2026-06-24. This ADR is now immutable;
+> a change of mind is a new ADR that supersedes it. D4 was hardened from 3 to 8
+> categories (+ D5) by a six-lens adversarial sweep before ratification.
 
 ## Context
 
