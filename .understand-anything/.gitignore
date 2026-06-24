@@ -1,0 +1,13 @@
+# Understand-Anything working dir — track only the durable knowledge graph.
+# Everything below is regenerable run cruft and must NOT enter git history.
+
+# Discarded prior-run artifacts (tool moves stale runs here)
+.trash-*/
+
+# Per-run intermediate scan/extraction output
+intermediate/
+tmp/
+**/tmp/
+
+# Tracked durable outputs (knowledge-graph.json, fingerprints.json, meta.json,
+# .understandignore) are added explicitly; this file just keeps the cruft out.

@@ -4,6 +4,79 @@ Instructions for AI coding assistants and developers working on the hermes-agent
 
 **Never give up on the right solution.**
 
+---
+
+## ⚖️ ViloForge fork — read this first (ASDLC governance)
+
+**This repository is the ViloForge fork of Nous Research's `hermes-agent`, being
+rebranded to `viloforge-agent`.** Everything *below this section* is upstream Nous
+guidance for contributing to hermes-agent and still applies to the code. **This
+section is the ViloForge fork-governance layer and takes precedence for any
+fork-level decision** (rebrand surface, upstream relationship, packaging identity,
+compatibility).
+
+We run an **ASDLC** process — Agentic Software Development Life Cycle
+(https://asdlc.io): *humans design, govern, and optimize the flow; agents execute
+against written contracts.* **Agents don't guess — they fulfill contracts.** The
+contracts are the ADRs, the plans in `docs/`, and this file. Decisions are recorded
+*before* they are implemented, so the *why* is never lost to a commit message.
+
+### Before you change anything — the gate
+
+1. **Read `docs/adr/` first.** These are the binding fork decisions. Any ADR marked
+   **`Constitutional: yes`** is non-negotiable — cite it by number when it bears on
+   your change. Start with [`docs/adr/README.md`](./docs/adr/README.md).
+2. **Decisions before code.** A decision-grade or fork-level change is recorded as
+   an **ADR first** (Nygard format, immutable once Accepted — supersede, never edit
+   in place; see [ADR-0001](./docs/adr/ADR-0001-record-viloforge-fork-decisions-as-adrs.md)),
+   *then* implemented. Don't bury an architecture decision inside an
+   implementation PR.
+3. **Plans are the delta (the "PBI").** Multi-step work is planned in `docs/` and
+   points back at the permanent context (the ADRs) before any edit — implement one
+   tier/slice at a time, each human-gated. The rebrand specifically is governed by
+   the tiered rebrand plan in `docs/` and (once ratified) **ADR-0003**.
+4. **Capture learnings.** Each unit of work produces an artifact **and** candidate
+   learnings — record durable facts/decisions in the kb area `hermes-agent`; the
+   ADRs remain the source of truth for architecture. Human review gates ratification.
+
+### Constitutional do-not-touch boundary (load-bearing)
+
+A blind find/replace of `hermes`/`nous` **breaks the product and violates the
+license.** Never rebrand the upstream-owned surface — it is not ours:
+
+- **Nous Portal provider & auth** — `plugins/*/nous/`, `hermes_cli/nous_*`,
+  `proxy/adapters/nous_portal.py`, `agent/portal_tags.py`, `agent/nous_rate_guard.py`.
+- **Nous Hermes LLM model IDs** — `hermes-3`, `hermes-4`, `nousresearch/...`.
+  `hermes_cli/model_switch.py::is_nous_hermes_non_agentic()` depends on the literal
+  string; corrupting it breaks model resolution.
+- **`nousresearch.com` URLs** and the **MIT license author "Nous Research"** (legal
+  attribution).
+
+Full enumeration, tiers, and exclusion patterns live in the tiered rebrand plan;
+this boundary is ratified in **ADR-0003** when accepted.
+
+### Upstream relationship
+
+Governed by **[ADR-0002](./docs/adr/ADR-0002-upstream-relationship-and-divergence-strategy.md)**
+(hard-fork-with-a-leash — *currently Proposed*): diverge freely on the product
+surface, but **keep the internal skeleton (`hermes_cli`, the `HERMES_*` env prefix)
+aligned with upstream** so upstream security fixes stay reimplementable. Keep the
+`upstream` remote and an upstream-watch ledger (`docs/viloforge/upstream-sync.md`).
+**Do not rename the internal `hermes_cli` namespace.**
+
+### ASDLC artifact map (where each concept lives in this repo)
+
+| ASDLC concept | Here |
+| --- | --- |
+| Spec / permanent context | ADRs (`docs/adr/`) + plans (`docs/`) |
+| ADR | `docs/adr/ADR-NNNN-*.md` (Nygard, immutable) |
+| Agent Constitution | the set of `Constitutional: yes` ADRs |
+| PBI / the delta | the active plan in `docs/` |
+| Adversarial review / context gates | human review + ADR ratification before merge |
+| Compound-loop learnings | kb area `hermes-agent` |
+
+---
+
 ## What Hermes Is
 
 Hermes is a personal AI agent that runs the same agent core across a CLI, a
