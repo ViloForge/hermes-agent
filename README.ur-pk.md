@@ -1,10 +1,16 @@
 <div dir="rtl">
 
 <p align="center">
-  <img src="assets/banner.png" alt="Hermes Agent" width="100%">
+  <img src="assets/banner.png" alt="ViloForge Agent" width="100%">
 </p>
 
-# ہرمیس ایجنٹ ☤ (Hermes Agent)
+# ہرمیس ایجنٹ ☤ (ViloForge Agent)
+
+<!-- TODO(viloforge): translate this fork notice into Urdu in a follow-up localization pass. -->
+> **ViloForge Agent** is a [ViloForge](https://github.com/ViloForge) fork of
+> [Hermes Agent](https://github.com/NousResearch/hermes-agent), originally created by
+> [Nous Research](https://nousresearch.com) (MIT). See the [main README](README.md) for
+> the fork's scope.
 
 <p align="center">
   <a href="https://hermes-agent.nousresearch.com/docs/"><img src="https://img.shields.io/badge/Docs-hermes--agent.nousresearch.com-FFD700?style=for-the-badge" alt="Documentation"></a>
