@@ -1,13 +1,14 @@
 # ADR-0002: Upstream relationship — the leash phase (diverge-and-reimplement, hard cut deferred)
 
-- **Status:** Proposed
-- **Date:** 2026-06-24
+- **Status:** Accepted
+- **Date:** 2026-06-24 (ratified 2026-06-24)
 - **Deciders:** operator + Claude
 - **Constitutional:** yes (governs how every change relates to upstream *during the leash phase*)
 
-> **Proposed** — this ADR records the recommended decision and its alternatives for
-> operator ratification. It deliberately replaces an ad-hoc "pick an option" prompt:
-> the decision is made *by accepting/editing this record*, not in chat.
+> **Accepted** — ratified by the operator on 2026-06-24. This ADR is now immutable;
+> a change of mind is a new ADR that supersedes it. The hard cut, when its trigger
+> (Decision point 5) fires, is recorded as a separate future ADR that supersedes the
+> leash-phase clauses here.
 
 ## Context
 
@@ -35,7 +36,7 @@ optionality is valuable. This ADR governs **that phase** and names the **trigger
 that ends it. It deliberately does **not** pre-decide the cut itself; that is a
 separate future decision (see "The hard cut is a deferred decision" below).
 
-## Decision (proposed)
+## Decision
 
 Adopt, **for the leash phase**, a **hard fork with a thin compatibility leash** —
 upstream is a *watched reference we reimplement from*, not a branch we routinely merge:
