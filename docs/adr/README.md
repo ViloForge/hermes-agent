@@ -40,4 +40,5 @@ Same practice as the rest of the ViloForge ADR logs (see
 | ADR | Title | Status |
 | --- | --- | --- |
 | [0001](./ADR-0001-record-viloforge-fork-decisions-as-adrs.md) | Record ViloForge fork decisions as immutable ADRs, in-repo | Accepted |
-| [0002](./ADR-0002-upstream-relationship-and-divergence-strategy.md) | Upstream relationship — the leash phase (diverge-and-reimplement; hard cut deferred to a triggered future ADR) | Proposed |
+| [0002](./ADR-0002-upstream-relationship-and-divergence-strategy.md) | Upstream relationship — the leash phase (diverge-and-reimplement; hard cut deferred to a triggered future ADR) | Accepted |
+| [0003](./ADR-0003-rebrand-identity-and-tiering.md) | Rebrand identity (`viloforge-agent`/`viloforge`), four-tier ordering, deprecated aliases, and the do-not-touch boundary | Proposed |

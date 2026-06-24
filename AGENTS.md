@@ -18,8 +18,9 @@ compatibility).
 We run an **ASDLC** process — Agentic Software Development Life Cycle
 (https://asdlc.io): *humans design, govern, and optimize the flow; agents execute
 against written contracts.* **Agents don't guess — they fulfill contracts.** The
-contracts are the ADRs, the plans in `docs/`, and this file. Decisions are recorded
-*before* they are implemented, so the *why* is never lost to a commit message.
+contracts are the ADRs (`docs/adr/`), the plans in `docs/viloforge/plans/`, and this
+file. Decisions are recorded *before* they are implemented, so the *why* is never
+lost to a commit message.
 
 ### Before you change anything — the gate
 
@@ -31,10 +32,12 @@ contracts are the ADRs, the plans in `docs/`, and this file. Decisions are recor
    in place; see [ADR-0001](./docs/adr/ADR-0001-record-viloforge-fork-decisions-as-adrs.md)),
    *then* implemented. Don't bury an architecture decision inside an
    implementation PR.
-3. **Plans are the delta (the "PBI").** Multi-step work is planned in `docs/` and
-   points back at the permanent context (the ADRs) before any edit — implement one
-   tier/slice at a time, each human-gated. The rebrand specifically is governed by
-   the tiered rebrand plan in `docs/` and (once ratified) **ADR-0003**.
+3. **Plans are the delta (the "PBI").** Multi-step work is planned in
+   `docs/viloforge/plans/` and points back at the permanent context (the ADRs)
+   before any edit — implement one tier/slice at a time, each human-gated. The
+   rebrand specifically is governed by **ADR-0003** (decisions) +
+   [`docs/viloforge/plans/2026-06-24-001-rebrand-tiered-plan.md`](./docs/viloforge/plans/2026-06-24-001-rebrand-tiered-plan.md)
+   (execution).
 4. **Capture learnings.** Each unit of work produces an artifact **and** candidate
    learnings — record durable facts/decisions in the kb area `hermes-agent`; the
    ADRs remain the source of truth for architecture. Human review gates ratification.
@@ -52,13 +55,13 @@ license.** Never rebrand the upstream-owned surface — it is not ours:
 - **`nousresearch.com` URLs** and the **MIT license author "Nous Research"** (legal
   attribution).
 
-Full enumeration, tiers, and exclusion patterns live in the tiered rebrand plan;
-this boundary is ratified in **ADR-0003** when accepted.
+Full enumeration, tiers, and exclusion patterns live in the rebrand plan
+(`docs/viloforge/plans/`); this boundary is **ADR-0003 D4** (Constitutional).
 
 ### Upstream relationship
 
 Governed by **[ADR-0002](./docs/adr/ADR-0002-upstream-relationship-and-divergence-strategy.md)**
-(hard-fork-with-a-leash — *currently Proposed*): diverge freely on the product
+(hard-fork-with-a-leash — Accepted): diverge freely on the product
 surface, but **keep the internal skeleton (`hermes_cli`, the `HERMES_*` env prefix)
 aligned with upstream** so upstream security fixes stay reimplementable. Keep the
 `upstream` remote and an upstream-watch ledger (`docs/viloforge/upstream-sync.md`).
@@ -68,10 +71,10 @@ aligned with upstream** so upstream security fixes stay reimplementable. Keep th
 
 | ASDLC concept | Here |
 | --- | --- |
-| Spec / permanent context | ADRs (`docs/adr/`) + plans (`docs/`) |
+| Spec / permanent context | ADRs (`docs/adr/`) + plans (`docs/viloforge/plans/`) |
 | ADR | `docs/adr/ADR-NNNN-*.md` (Nygard, immutable) |
 | Agent Constitution | the set of `Constitutional: yes` ADRs |
-| PBI / the delta | the active plan in `docs/` |
+| PBI / the delta | the active plan in `docs/viloforge/plans/` |
 | Adversarial review / context gates | human review + ADR ratification before merge |
 | Compound-loop learnings | kb area `hermes-agent` |
 
