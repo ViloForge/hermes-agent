@@ -22,7 +22,20 @@
 2. **Wire the `upstream` remote** (per ADR-0002) and **sync once to upstream HEAD**
    before diverging (ADR-0002 Decision point 4): `git remote add upstream
    https://github.com/NousResearch/hermes-agent.git && git fetch upstream`. Create
-   the watch ledger `docs/viloforge/upstream-sync.md`.
+   the watch ledger `docs/viloforge/upstream-sync.md`. — ✅ **done** (PR #4, merge
+   commit `be87d31b3`, synced through upstream `89540d592`; merge-base advanced,
+   divergence now 12). After it landed both the blast-radius counts and the knowledge
+   graph go stale at `bc5ae3919` — regenerate before Tier 1 (still pending).
+3. **DECISION — upstream syncs land via a merge commit (`--merge`), never a squash.**
+   ADR-0002 D4 decided *that* we sync to HEAD but is silent on the git mechanic; this
+   is the execution-level fill (correctly here in the plan, not in an immutable ADR —
+   per ADR-0003's split of execution detail into the plan). *Rationale:* a true merge
+   keeps `main` a descendant of upstream, so the merge-base advances, security
+   `cherry-pick -x` retains accurate already-applied ancestry (ADR-0002 point 3), the
+   `rev-list --count main..upstream/main` divergence signal stays truthful, and
+   upstream authorship survives. A squash leaves upstream commits non-ancestors and
+   breaks all four. (Squash stays correct for ordinary contributor feature PRs.) The
+   ledger's *Sync procedure* section points here. Recorded 2026-06-24 after PR #4.
 
 ## Tier 1 — Display brand (low risk; ship first)
 
@@ -64,7 +77,8 @@
 per PR; verify each before the next. Tier 4 is not a step — it is the exclusion
 boundary enforced throughout.
 
-## Open execution sub-decision
+## Resolved execution sub-decisions
 
-- **First-sync timing (ADR-0002 point 4 open sub-decision):** sync-to-upstream-HEAD
-  before Tier 1 (recommended) vs. rebrand on today's base. Recommendation: sync first.
+- **First-sync timing (ADR-0002 point 4 open sub-decision):** ✅ resolved — synced to
+  upstream HEAD first (PR #4), then diverge. (Was: sync-first vs. rebrand on today's base.)
+- **Sync merge mechanic:** ✅ resolved — `--merge`, never squash (see Pre-flight 3).
