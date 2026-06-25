@@ -1,0 +1,51 @@
+#
+# docker-compose.preview.yml — ViloForge Agent PREVIEW (Tier-1 display brand)
+#
+# Runs the prebuilt fork image from GHCR so you can evaluate the rebrand
+# hands-on before Tier 2. See docs/viloforge/preview.md for the full runbook.
+#
+# Quick start:
+#   docker compose -f docker-compose.preview.yml pull
+#   docker compose -f docker-compose.preview.yml up -d
+#   open http://localhost:9119          # the dashboard (embeds the TUI)
+#   docker compose -f docker-compose.preview.yml logs -f
+#   docker compose -f docker-compose.preview.yml down -v   # stop + wipe the throwaway data
+#
+# Scope: this is the Tier-1 DISPLAY brand (banner / dashboard / docs say
+# "ViloForge") on the still-`hermes` skeleton — the package is still
+# `hermes-agent`, the command is still `hermes`, and the image path is still
+# `.../hermes-agent`. Tier 2 is what renames those; this preview is exactly the
+# state to evaluate before deciding it.
+#
+# Data is an isolated, throwaway named volume (NOT your real ~/.hermes) so the
+# preview can't touch your real config / memory. `down -v` removes it.
+#
+# Functional testing needs a model-provider key — drop one in the `environment`
+# block below (or an .env file beside this compose). Without a key you can still
+# see all the rebranded chrome (banner, dashboard title/theme, docs).
+#
+services:
+  dashboard:
+    image: ghcr.io/viloforge/hermes-agent:preview
+    container_name: viloforge-preview
+    restart: unless-stopped
+    # Host networking matches the project's default compose; the dashboard binds
+    # 127.0.0.1:9119 on the host. (On Docker Desktop without host-net support,
+    # see the port-publish alternative in docs/viloforge/preview.md.)
+    network_mode: host
+    volumes:
+      - viloforge-preview-data:/opt/data
+    environment:
+      - HERMES_UID=${HERMES_UID:-10000}
+      - HERMES_GID=${HERMES_GID:-10000}
+      # --- functional testing: uncomment ONE provider key (or use an .env file) ---
+      # - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # - OPENAI_API_KEY=${OPENAI_API_KEY}
+    # Localhost-only by default (the dashboard stores API keys — do not bind it to
+    # 0.0.0.0 without a fronting auth proxy). For remote access, SSH-tunnel:
+    #   ssh -L 9119:localhost:9119 <host>
+    command: ["dashboard", "--host", "127.0.0.1", "--no-open"]
+
+volumes:
+  viloforge-preview-data:

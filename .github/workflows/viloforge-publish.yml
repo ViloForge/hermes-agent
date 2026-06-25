@@ -10,6 +10,11 @@ name: Viloforge Docker Publish
 #
 # Scope: amd64 only (the hetzner-1 deploy target). arm64 can be added later via a
 # native `ubuntu-24.04-arm` runner + manifest merge — the pattern upstream uses.
+#
+# Tags: push to main → :latest + :sha; v* tag → semver tags; a manual
+# `workflow_dispatch` run also publishes a pinned `:preview` channel for operator
+# hands-on evaluation (see docs/viloforge/preview.md). Dispatch with a `ref` to
+# build a specific branch/tag/SHA.
 
 on:
   push:
@@ -62,6 +67,7 @@ jobs:
           images: ${{ env.IMAGE }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=preview,enable=${{ github.event_name == 'workflow_dispatch' }}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=sha
