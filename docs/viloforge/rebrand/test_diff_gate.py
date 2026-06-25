@@ -93,6 +93,21 @@ class HonorsGuardBoundaries(unittest.TestCase):
         v = dg.scan_diff(_diff("x.py", "viloforge_cli_shim = True  # rebrand-gate: ok"))
         self.assertEqual(v, [])
 
+    def test_self_exemption(self):
+        # The gate's own machinery + governance docs carry signature strings as
+        # fixtures/examples; they must not flag themselves.
+        for path in ("docs/viloforge/rebrand/test_diff_gate.py",
+                     "docs/viloforge/rebrand/README.md",
+                     "docs/viloforge/plans/2026-06-24-001-rebrand-tiered-plan.md",
+                     "docs/adr/ADR-0004-machine-enforce-do-not-touch-and-rebrand-test-strategy.md",
+                     ".github/workflows/rebrand-guard.yml"):
+            self.assertEqual(dg.scan_diff(_diff(path, "example: X-ViloForge-Model + viloforge_cli")), [], path)
+
+    def test_real_code_still_scanned(self):
+        # Exemption must not over-broaden: ordinary source is still gated.
+        v = dg.scan_diff(_diff("agent/run_agent.py", 'h["X-ViloForge-Session"] = t'))
+        self.assertTrue(v)
+
     def test_line_numbers_reported(self):
         diff = ("--- a/x.py\n+++ b/x.py\n@@ -10,0 +10,2 @@\n"
                 "+clean line\n+X-ViloForge-Model: x\n")

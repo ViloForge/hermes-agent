@@ -32,6 +32,12 @@ Usage::
 Escape hatch: a deliberately-corrupted-looking line (extremely rare) can be
 suppressed by adding the marker ``rebrand-gate: ok`` to that line — visible in the
 diff and reviewable, so it cannot silently weaken the gate.
+
+Self-exemption: the gate's own machinery (``docs/viloforge/rebrand/``), its CI
+workflow, and the governance docs that document the signatures (ADR-0004, rebrand
+plans) legitimately contain signature strings as fixtures/examples, so the gate
+skips them (``_self_exempt``) — the standard linter pattern of not flagging your
+own test fixtures.
 """
 
 from __future__ import annotations
@@ -48,6 +54,26 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import exclusions as _ex  # noqa: E402
 
 SUPPRESS_MARKER = "rebrand-gate: ok"
+
+# The gate's own machinery + the governance docs that DESCRIBE it legitimately
+# contain corruption-signature strings (fixtures, examples, comments). Scanning
+# them would flag the very examples that document what the gate catches, so the
+# gate skips them — standard linter self-exemption. (`str.startswith` takes a
+# tuple; the ADR-0004 file is matched by substring since its full name is long.)
+_SELF_EXEMPT_PREFIXES = (
+    "docs/viloforge/rebrand/",            # guard / transform / gate + tests + README
+    "docs/viloforge/plans/",             # rebrand plans cite the signatures in prose
+    ".github/workflows/rebrand-guard.yml",  # the gate's own CI workflow
+)
+
+
+def _self_exempt(relpath: str) -> bool:
+    # NB: strip a leading "./" only — lstrip("./") would also eat the leading dot
+    # of dotdirs like ".github", breaking the prefix match.
+    rp = relpath.replace("\\", "/")
+    if rp.startswith("./"):
+        rp = rp[2:]
+    return rp.startswith(_SELF_EXEMPT_PREFIXES) or "ADR-0004" in rp
 
 
 @dataclass(frozen=True)
@@ -152,6 +178,8 @@ def scan_diff(diff_text: str) -> List[Violation]:
             continue
         excluded, _ = _ex.path_excluded(path)
         if excluded:
+            continue
+        if _self_exempt(path):
             continue
         if SUPPRESS_MARKER in content:
             continue
