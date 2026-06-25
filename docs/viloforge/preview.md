@@ -20,11 +20,14 @@ no separate repo (the registry tag is the distribution unit).
 
 - Docker + the Compose plugin.
 - Provider credentials **only for functional testing** (chatting) — the rebranded
-  chrome is visible without any. The preview is wired for two:
-  - **DeepSeek** — an API key from <https://platform.deepseek.com/>.
-  - **Claude Code subscription** — a long-lived token from `claude setup-token`
-    (needs the Claude Code CLI + an active subscription). The preview uses *your*
-    subscription quota via the anthropic provider's `claude-code` OAuth path.
+  chrome is visible without any. `preview.sh` auto-detects two (see the resolution
+  table below); usually nothing to set up:
+  - **DeepSeek** — auto-detected from `$DEEPSEEK_API_KEY`/`$DEEPSEEK_TOKEN` or
+    `~/.hermes/.env`; otherwise get a key from <https://platform.deepseek.com/>.
+  - **Claude Code subscription** — auto-detected from the live token your Claude
+    Code CLI stores (`~/.claude/.credentials.json`), or `claude setup-token` for a
+    durable one. Uses *your* subscription quota via the anthropic `claude-code`
+    OAuth path.
 - **GHCR access.** If `ghcr.io/viloforge/hermes-agent` is a private package,
   authenticate once with a GitHub token that has `read:packages`:
   ```bash
@@ -35,21 +38,34 @@ no separate repo (the registry tag is the distribution unit).
 ## Quick start — `preview.sh`
 
 ```bash
-./preview.sh seed     # one-time: store your DeepSeek key + Claude Code token
-./preview.sh start    # pull + run; prints the dashboard URL + seeded providers
+./preview.sh start    # AUTO-detects creds, pulls, runs; prints URL + detected providers
 # open http://localhost:9119
+./preview.sh status   # what's running + which providers were detected
 ./preview.sh logs     # follow logs
 ./preview.sh stop     # stop (keeps the throwaway data)
 ./preview.sh reset    # stop + WIPE the throwaway data volume
+./preview.sh seed     # OPTIONAL: store creds explicitly in .preview.env
 ```
 
-`seed` writes a **git-ignored `.preview.env`** (template: `.preview.env.example`)
-and the credentials are passed to the container as env vars at runtime — they are
-never committed, baked into the image, or written to the data volume. Data lives in
-an **isolated throwaway volume** (`viloforge-preview-data`), not your real
-`~/.hermes`. The dashboard embeds the real TUI, so you also see the rebranded chat
-surface; switch models live in the dashboard (the seeded default is `HERMES_MODEL`,
-`deepseek-chat` out of the box).
+**Credentials are resolved automatically** — no manual step. Per provider, first hit
+wins (an already-set env var always wins; empty values never clobber):
+
+| Provider | Resolution order |
+| --- | --- |
+| **DeepSeek** | `$DEEPSEEK_API_KEY` → `$DEEPSEEK_TOKEN` → `.preview.env` → `~/.hermes/.env` |
+| **Claude Code subscription** | `$CLAUDE_CODE_OAUTH_TOKEN` → `.preview.env` → `~/.hermes/.env` → the live token in `~/.claude/.credentials.json` |
+
+The Claude path auto-extracts the live `sk-ant-oat` OAuth token your Claude Code CLI
+already stores — so if you're signed in to Claude Code, **nothing to set up**. That
+token is short-lived (expires roughly hourly), so just re-run `./preview.sh start` to
+refresh it; for a durable token run `claude setup-token` and export
+`CLAUDE_CODE_OAUTH_TOKEN` (or put it in `.preview.env`).
+
+Credentials are passed to the container as env vars at runtime — never committed,
+baked into the image, or written to the data volume. Data lives in an **isolated
+throwaway volume** (`viloforge-preview-data`), not your real `~/.hermes`. The
+dashboard embeds the real TUI; switch models live in its picker (seeded default
+`HERMES_MODEL=deepseek-chat`; set a `claude-*` model to use the subscription).
 
 ### Manual (without the wrapper)
 
