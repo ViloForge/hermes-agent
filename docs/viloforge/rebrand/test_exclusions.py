@@ -53,6 +53,22 @@ class DoNotTouchProtected(unittest.TestCase):
     def test_x_nous_headers(self):
         self.assertIn("x-nous-header", _names('headers["x-nous-credits-remaining"]'))
 
+    def test_model_family_spaced_prose(self):
+        # The model family is also written with a space in prose; a \bHermes\b
+        # codemod must not rewrite these upstream model references.
+        self.assertIn("nous-hermes-spaced", _names("the Nous Hermes models"))
+        self.assertTrue(ex.line_protected("Nous Hermes is the model family."))
+        for s in ("built on Hermes 3", "Hermes 4 is non-agentic"):
+            self.assertIn("hermes-model-spaced", _names(s), s)
+            self.assertTrue(ex.line_protected(s), s)
+
+    def test_allcaps_banner_is_rebrandable_not_protected(self):
+        # The cli.py framework banner "⚕ NOUS HERMES ⚕" is a Tier-1 rebrand
+        # target (→ VILOFORGE), distinguished from the prose model family by its
+        # all-caps form. It must NOT be protected.
+        self.assertNotIn("nous-hermes-spaced", _names("⚕ NOUS HERMES ⚕"))
+        self.assertFalse(ex.line_protected("⚕ NOUS HERMES ⚕", include_tier3=True))
+
     def test_sibling_projects(self):
         self.assertIn("psyche", _names("import psyche.core"))
         self.assertIn("atropos", _names("from atropos import rollouts"))
@@ -97,6 +113,16 @@ class RebrandableNotProtected(unittest.TestCase):
         s = "HERMES_HOME = os.environ['HERMES_HOME']"
         self.assertFalse(ex.line_protected(s), s)
         self.assertTrue(ex.line_protected(s, include_tier3=True), s)
+
+    def test_x_hermes_header_only_protected_under_tier3(self):
+        # Our wire-contract headers are Tier-3 skeleton (kept aligned during the
+        # leash), so they protect only when a codemod opts into tier3 — like the
+        # rest of the skeleton. Mixed-case, so HERMES_[A-Z] does not cover them.
+        for s in ('headers["X-Hermes-Session-Token"] = tok',
+                  "res.headers['x-hermes-model']"):
+            self.assertFalse(ex.line_protected(s), s)
+            self.assertTrue(ex.line_protected(s, include_tier3=True), s)
+            self.assertIn("x-hermes-header", _names(s, include_tier3=True), s)
 
 
 class PathExclusions(unittest.TestCase):

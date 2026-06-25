@@ -72,6 +72,30 @@ _D4_CONTENT: List[ContentPattern] = [
         "nousresearch/hermes-*, nous_hermes, Nous-Hermes — model family + the "
         "is_nous_hermes_non_agentic guard name.",
     ),
+    # D4.2 prose space-forms: the model family is also written "Nous Hermes" and
+    # "Hermes 3"/"Hermes 4" in prose (space, not the hyphen the patterns above
+    # catch). A `\bHermes\b`→ViloForge codemod would corrupt these upstream model
+    # references ("Nous ViloForge", "ViloForge 3"). Conservative over-protection:
+    # under-rebrand here is caught by the per-slice completeness check (L3); a
+    # corrupted model reference is not. (Extends D4.2 enforcement beyond the
+    # hyphenated patterns ADR-0003 lists — operator-ratifiable.)
+    ContentPattern(
+        "nous-hermes-spaced",
+        # Case-SENSITIVE on purpose: protects the prose model family "Nous Hermes"
+        # but NOT the all-caps cli.py banner "NOUS HERMES", which ADR-0003 Tier 1
+        # designates a rebrand target (→ VILOFORGE). Same letters, different
+        # meaning; case is the only signal that separates them.
+        re.compile(r"Nous\s+Hermes"),
+        "D4.2",
+        "'Nous Hermes' model family in prose (title-case space form). The all-caps "
+        "'NOUS HERMES' banner is intentionally NOT matched (it is a Tier-1 target).",
+    ),
+    ContentPattern(
+        "hermes-model-spaced",
+        re.compile(r"hermes\s+[0-9]", re.IGNORECASE),
+        "D4.2",
+        "'Hermes 3'/'Hermes 4' model family in prose (space-separated form).",
+    ),
     ContentPattern(
         "nousresearch",
         re.compile(r"nousresearch", re.IGNORECASE),
@@ -153,6 +177,16 @@ _TIER3_CONTENT: List[ContentPattern] = [
         "tier3",
         "HERMES_* env prefix (496 vars) — kept + aliased per ADR-0003 D2, not "
         "renamed during the leash.",
+    ),
+    ContentPattern(
+        "x-hermes-header",
+        re.compile(r"x-hermes-", re.IGNORECASE),
+        "tier3",
+        "X-Hermes-* HTTP headers (X-Hermes-Session-Token/-Id/-Key/-Model) — our "
+        "web/API wire contract (web/src/lib/api.ts <-> hermes_cli/web_server.py). "
+        "Part of the HERMES_* skeleton kept aligned with upstream during the leash; "
+        "mixed-case so HERMES_[A-Z] does not catch it. A \\bHermes\\b codemod would "
+        "corrupt the header (brand token sits between hyphens).",
     ),
 ]
 

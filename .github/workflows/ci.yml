@@ -89,6 +89,11 @@ jobs:
     needs: detect
     uses: ./.github/workflows/uv-lockfile-check.yml
 
+  rebrand-guard:
+    needs: detect
+    if: needs.detect.outputs.event_name == 'pull_request'
+    uses: ./.github/workflows/rebrand-guard.yml
+
   docker-lint:
     needs: detect
     if: needs.detect.outputs.docker_meta == 'true'
@@ -128,6 +133,7 @@ jobs:
       - docker-lint
       - supply-chain
       - osv-scanner
+      - rebrand-guard
     if: always()
     runs-on: ubuntu-latest
     steps:

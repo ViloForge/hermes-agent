@@ -1,0 +1,33 @@
+name: Rebrand do-not-touch gate
+
+# Diff-scoped enforcement of the ADR-0003 D4 do-not-touch boundary + the
+# Tier-3-deferred skeleton (ADR-0004 L2). Fails a PR that corrupts a protected
+# token (e.g. X-Hermes-* → X-ViloForge-*, hermes-3 → viloforge-3, hermes_cli →
+# viloforge_cli). Pure-stdlib; runs in seconds. Triggered only through the CI
+# orchestrator (ci.yml) via workflow_call.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  rebrand-guard:
+    name: Rebrand do-not-touch gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0 # full history so we can diff against the PR base
+
+      - name: Guard contract tests (exclusions / transform / diff-gate)
+        run: |
+          python3 docs/viloforge/rebrand/test_exclusions.py
+          python3 docs/viloforge/rebrand/test_rebrand_apply.py
+          python3 docs/viloforge/rebrand/test_diff_gate.py
+
+      - name: Gate the PR diff for do-not-touch corruption
+        run: |
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          python3 docs/viloforge/rebrand/diff_gate.py --base origin/main --head HEAD
