@@ -24,6 +24,12 @@
 # block below (or an .env file beside this compose). Without a key you can still
 # see all the rebranded chrome (banner, dashboard title/theme, docs).
 #
+# Pin a dedicated compose project so the preview is isolated from the repo's main
+# docker-compose.yml (same directory ⇒ would otherwise share the cwd-derived
+# project "hermes-agent", and a preview `down` could remove the main stack's
+# containers). Pinning also makes up/down deterministic regardless of cwd.
+name: viloforge-preview
+
 services:
   dashboard:
     image: ghcr.io/viloforge/hermes-agent:preview
