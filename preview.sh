@@ -97,6 +97,9 @@ cmd_seed() {
   grep -vE '^HERMES_MODEL=' "$SECRETS_FILE" > "$SECRETS_FILE.tmp" 2>/dev/null && mv "$SECRETS_FILE.tmp" "$SECRETS_FILE" || true
   printf 'HERMES_MODEL=%s\n' "$mdl" >> "$SECRETS_FILE"
 
+  # Lock down perms LAST — the grep>tmp>mv rewrites above recreate the file with
+  # the default umask (644), so chmod must come after every write.
+  chmod 600 "$SECRETS_FILE"
   echo; c_ok "Saved. Now: ./preview.sh start"
 }
 
