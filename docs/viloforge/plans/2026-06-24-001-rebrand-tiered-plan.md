@@ -89,6 +89,19 @@ chose "add a fork notice now"). Scope includes docstrings/comments (operator cho
   (re-verify live what tag/image it pushes before editing); `.github/actions/hermes-smoke-test/`.
 - **Gate:** human review before starting — these are the real product-identity edits.
 
+### Pre-Tier-2 preview (operator hands-on eval)
+
+Before greenlighting Tier 2, ship a **GHCR `:preview` channel** so the operator
+can run the Tier-1 state and evaluate it. Decided **not** as a separate repo —
+the fork already builds its image from this repo to `ghcr.io/viloforge/hermes-agent`
+(`viloforge-publish.yml`); the registry tag is the distribution unit. Adds a
+`:preview` raw tag (on `workflow_dispatch`) + `docker-compose.preview.yml`
+(pulls the image, dashboard on `:9119`, isolated throwaway volume) +
+`docs/viloforge/preview.md` runbook. Naming = **`preview`** (early/evaluate, not
+"release candidate" which implies ship-ready). Scope honesty: the preview is the
+Tier-1 *display* brand on the still-`hermes` skeleton (package/command/image name
+unchanged — those are Tier 2's job). kb decision `y72sk2pM`.
+
 ## Tier 3 — Internal namespace + env prefix — **DEFERRED** (ADR-0002 leash phase)
 
 - **Do NOT** rename `hermes_cli` (4,336 import sites / 1,051 files) or the `HERMES_*`

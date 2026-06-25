@@ -1,0 +1,65 @@
+#
+# docker-compose.preview.yml — ViloForge Agent PREVIEW (Tier-1 display brand)
+#
+# Runs the prebuilt fork image from GHCR so you can evaluate the rebrand
+# hands-on before Tier 2. See docs/viloforge/preview.md for the full runbook.
+#
+# Quick start:
+#   docker compose -f docker-compose.preview.yml pull
+#   docker compose -f docker-compose.preview.yml up -d
+#   open http://localhost:9119          # the dashboard (embeds the TUI)
+#   docker compose -f docker-compose.preview.yml logs -f
+#   docker compose -f docker-compose.preview.yml down -v   # stop + wipe the throwaway data
+#
+# Scope: this is the Tier-1 DISPLAY brand (banner / dashboard / docs say
+# "ViloForge") on the still-`hermes` skeleton — the package is still
+# `hermes-agent`, the command is still `hermes`, and the image path is still
+# `.../hermes-agent`. Tier 2 is what renames those; this preview is exactly the
+# state to evaluate before deciding it.
+#
+# Data is an isolated, throwaway named volume (NOT your real ~/.hermes) so the
+# preview can't touch your real config / memory. `down -v` removes it.
+#
+# Functional testing needs a model-provider key — drop one in the `environment`
+# block below (or an .env file beside this compose). Without a key you can still
+# see all the rebranded chrome (banner, dashboard title/theme, docs).
+#
+# Pin a dedicated compose project so the preview is isolated from the repo's main
+# docker-compose.yml (same directory ⇒ would otherwise share the cwd-derived
+# project "hermes-agent", and a preview `down` could remove the main stack's
+# containers). Pinning also makes up/down deterministic regardless of cwd.
+name: viloforge-preview
+
+services:
+  dashboard:
+    image: ghcr.io/viloforge/hermes-agent:preview
+    container_name: viloforge-preview
+    restart: unless-stopped
+    # Host networking matches the project's default compose; the dashboard binds
+    # 127.0.0.1:9119 on the host. (On Docker Desktop without host-net support,
+    # see the port-publish alternative in docs/viloforge/preview.md.)
+    network_mode: host
+    volumes:
+      - viloforge-preview-data:/opt/data
+    environment:
+      - HERMES_UID=${HERMES_UID:-10000}
+      - HERMES_GID=${HERMES_GID:-10000}
+      # Optional model PIN (bare passthrough). Leave unset so the dashboard model
+      # picker controls the model — HERMES_MODEL, if set, overrides the picker.
+      - HERMES_MODEL
+      # Seeded provider credentials — bare passthrough: each is injected into the
+      # container ONLY if set in the environment running compose (use ./preview.sh,
+      # which sources the git-ignored .preview.env). Unset ⇒ not injected, so the
+      # provider is simply unavailable rather than failing on an empty key.
+      - DEEPSEEK_API_KEY              # DeepSeek (https://platform.deepseek.com/)
+      - CLAUDE_CODE_OAUTH_TOKEN       # Claude Code subscription (claude setup-token)
+      # Other providers: add the var here + to .preview.env, e.g.
+      # - OPENROUTER_API_KEY
+      # - ANTHROPIC_API_KEY
+    # Localhost-only by default (the dashboard stores API keys — do not bind it to
+    # 0.0.0.0 without a fronting auth proxy). For remote access, SSH-tunnel:
+    #   ssh -L 9119:localhost:9119 <host>
+    command: ["dashboard", "--host", "127.0.0.1", "--no-open"]
+
+volumes:
+  viloforge-preview-data:
