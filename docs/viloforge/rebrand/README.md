@@ -18,8 +18,15 @@ violates the MIT license. The rebrand runs through the tested transform here
 | `exclusions.py` | Canonical pattern set + guard API (`protected_spans`, `line_protected`, `path_excluded`, `all_patterns`). Pure stdlib. The single source of truth. |
 | `rebrand_apply.py` | **L1** guard-aware brand transform (`rebrand_text`). Replaces `Hermes→ViloForge` display tokens only *outside* protected spans. The codemod every rebrand slice imports — replaces the old throwaway `scratchpad/` apply scripts. |
 | `diff_gate.py` | **L2** diff-scoped gate. Fails a PR whose diff contains a *corruption signature* (a protected token in rebranded form, e.g. `x-viloforge-`, `viloforge_cli`). Run locally pre-PR + as the `rebrand-guard` CI job. |
+| `completeness.py` | **L3 (repo-wide)** completeness sweep. The *inverse* of the do-not-touch gate: finds display tokens that were **missed** (a line `rebrand_apply` would still change), grouped by surface, minus the intentional-keep set. Catches an unscoped surface (`ui-tui`) or a shadowing backend copy (`web_server.py`). |
 | `scan.py` | Read-only E2E self-check — runs the patterns over the live repo and reports per-pattern coverage + a "trap" review queue. |
-| `test_exclusions.py` / `test_rebrand_apply.py` / `test_diff_gate.py` | Contract tests (stdlib `unittest`). Pin behavior, not repo counts. |
+| `test_exclusions.py` / `test_rebrand_apply.py` / `test_diff_gate.py` / `test_completeness.py` | Contract tests (stdlib `unittest`). Pin behavior, not repo counts. |
+
+> **Why a graph *and* grep:** `completeness.py` finds residual *tokens*; it cannot see
+> an ASCII-art logo (box-drawing chars, no literal text) or a tagline without the brand
+> word. The knowledge graph finds *surfaces*, a live preview catches *rendered art* —
+> all three layers are needed. See
+> [`../knowledge-graph-vs-grep.md`](../knowledge-graph-vs-grep.md).
 
 ## What it encodes
 
@@ -67,7 +74,20 @@ python docs/viloforge/rebrand/scan.py --traps    # brand-near-protected review q
 python docs/viloforge/rebrand/test_exclusions.py # contract tests (guard)
 python docs/viloforge/rebrand/test_rebrand_apply.py  # contract tests (transform)
 python docs/viloforge/rebrand/test_diff_gate.py      # contract tests (gate)
+python docs/viloforge/rebrand/test_completeness.py   # contract tests (completeness)
 ```
+
+### Find what was missed (L3 completeness)
+
+```bash
+python docs/viloforge/rebrand/completeness.py            # per-surface residual report
+python docs/viloforge/rebrand/completeness.py --list     # full file:line work-list (the Tier-1d/2 scope)
+python docs/viloforge/rebrand/completeness.py --surface ui-tui --list
+python docs/viloforge/rebrand/completeness.py --surface cli --max 0   # HARD gate once CLI is "done"
+```
+
+Runs report-only in `rebrand-guard` CI today (residuals remain). As each surface's tier
+lands, add `--surface <s> --max 0` to make that surface a zero-residual hard gate.
 
 ### Apply the transform (L1) and gate a PR (L2)
 
