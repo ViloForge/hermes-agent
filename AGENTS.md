@@ -64,6 +64,38 @@ license.** Never rebrand the upstream-owned surface — it is not ours:
 Full enumeration, tiers, and exclusion patterns live in the rebrand plan
 (`docs/viloforge/plans/`); this boundary is **ADR-0003 D4** (Constitutional).
 
+### Rebrand completeness discipline (the do-not-touch boundary's twin — learned the hard way)
+
+D4 stops you from rebranding what you *shouldn't*. This stops you from *missing*
+what you should. Tier-1 shipped three branding misses caught only by a live preview
+(`ui-tui/` ASCII banner still read `HERMES-AGENT`; the dashboard theme still showed
+`Hermes Teal`). Root cause: **scope was a hand-listed set of directories, not a list
+derived from the whole repo.** Four rules so it can't recur:
+
+1. **Derive scope from a complete enumeration, never from directory intuition.** The
+   product has **five display surfaces** — CLI (`cli.py`/`hermes_cli`), **TUI
+   (`ui-tui/`)**, Web dashboard (`web/`), Docs site (`website/`), Desktop
+   (`apps/desktop/`). Tier-1 listed three and silently dropped the TUI + Desktop.
+   Enumerate surfaces from the knowledge graph's layers/communities (it cleanly
+   separates them — verified) **and** every display token from a repo-wide grep;
+   *that union* is the work-list. A hand-curated directory list is how you lose a
+   whole surface.
+2. **Hunt shadowing duplicates — the obvious file is often not the one that renders.**
+   A display string usually has a *runtime/backend* source that shadows the source
+   you'd expect. Real cases: dashboard theme labels live in **`hermes_cli/web_server.py`**
+   *and* `web/src/themes/presets.ts` (backend wins); the CLI brand comes from
+   `hermes_cli/skin_engine.py`, not `cli.py` fallbacks; the TUI default model obeys
+   `HERMES_MODEL` over `config.yaml`. Rebrand **every** copy, and grep the whole tree
+   for a token before assuming one file owns it.
+3. **A *global* completeness sweep before any tier is "done"** — not just the
+   per-slice check. Assert **zero** residual display-brand tokens anywhere outside the
+   D4 do-not-touch boundary and the intentional-keep set (fork notices, attribution).
+   This is the missing safeguard (extends ADR-0004 L3 from per-slice to repo-wide); it
+   would have flagged all three misses instantly.
+4. **Verify in a live preview against the *served build* and the *backend API*, with a
+   clean browser profile.** Persisted client state (localStorage) and stale bundles
+   lie — cross-check the rendered string against what the build/API actually emits.
+
 ### Upstream relationship
 
 Governed by **[ADR-0002](./docs/adr/ADR-0002-upstream-relationship-and-divergence-strategy.md)**
