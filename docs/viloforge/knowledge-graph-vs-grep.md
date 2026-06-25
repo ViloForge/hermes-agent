@@ -67,6 +67,7 @@ python3 -m venv /tmp/graphify-venv && /tmp/graphify-venv/bin/pip install graphif
 1. **At rebrand scoping time, open the graph report** and enumerate the display
    surfaces from it (CLI, TUI, Web, Docs, Desktop) — do not hand-list directories.
 2. **Run a global token-completeness sweep** (grep-based) before any tier is "done".
-3. **Adopt one maintained graph** as the standing tool. graphify is a reasonable
-   replacement for the one-off `.understand-anything` dump (packaged, `affected`
-   blast-radius, MCP, git-hook auto-refresh) — tracked as a separate decision.
+3. **Adopt one maintained graph** as the standing tool. **Adopted: graphify** —
+   on-demand, regenerate-on-demand, pinned. Setup + the rebrand-scoping workflow live
+   in [`graphify.md`](./graphify.md). (Replaces the stale one-off `.understand-anything`
+   dump; the `PreToolUse` hook integration is left opt-in.)
