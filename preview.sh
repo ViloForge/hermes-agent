@@ -126,7 +126,7 @@ provider_summary() {
   fi
   if [ "$any" = 0 ]; then
     c_warn "  ! no provider creds found — chrome is visible but chat won't work."
-    c_dim  "    set DEEPSEEK_API_KEY / run 'claude setup-token' / ./preview.sh seed"
+    c_dim  "    set DEEPSEEK_API_KEY / run 'claude setup-token' / re-run the launcher with 'seed'"
   fi
   c_dim "  default model: ${HERMES_MODEL:-$DEFAULT_MODEL}  (switch in the dashboard)"
 }
@@ -171,7 +171,7 @@ cmd_seed() {
   # Lock down perms LAST — the grep>tmp>mv rewrites above recreate the file with
   # the default umask (644), so chmod must come after every write.
   chmod 600 "$SECRETS_FILE"
-  echo; c_ok "Saved. Now: ./preview.sh start"
+  echo; c_ok "Saved. Now run 'start'."
 }
 
 cmd_start() {
@@ -183,10 +183,10 @@ cmd_start() {
   echo
   c_ok "ViloForge Agent preview is up → $URL"
   provider_summary
-  c_dim "logs: ./preview.sh logs   |   stop: ./preview.sh stop"
+  c_dim "  manage: re-run the launcher with  logs · status · stop · reset"
 }
 
-cmd_stop()    { dc down; c_ok "stopped (data volume kept; ./preview.sh start to resume)"; }
+cmd_stop()    { dc down; c_ok "stopped (data volume kept; run 'start' again to resume)"; }
 cmd_restart() { cmd_stop; cmd_start; }
 cmd_logs()    { dc logs -f; }
 
