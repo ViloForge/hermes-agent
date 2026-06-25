@@ -38,10 +38,17 @@ services:
     environment:
       - HERMES_UID=${HERMES_UID:-10000}
       - HERMES_GID=${HERMES_GID:-10000}
-      # --- functional testing: uncomment ONE provider key (or use an .env file) ---
-      # - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      # - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      # - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Default model the preview boots with (switchable in the dashboard).
+      - HERMES_MODEL=${HERMES_MODEL:-deepseek-chat}
+      # Seeded provider credentials — bare passthrough: each is injected into the
+      # container ONLY if set in the environment running compose (use ./preview.sh,
+      # which sources the git-ignored .preview.env). Unset ⇒ not injected, so the
+      # provider is simply unavailable rather than failing on an empty key.
+      - DEEPSEEK_API_KEY              # DeepSeek (https://platform.deepseek.com/)
+      - CLAUDE_CODE_OAUTH_TOKEN       # Claude Code subscription (claude setup-token)
+      # Other providers: add the var here + to .preview.env, e.g.
+      # - OPENROUTER_API_KEY
+      # - ANTHROPIC_API_KEY
     # Localhost-only by default (the dashboard stores API keys — do not bind it to
     # 0.0.0.0 without a fronting auth proxy). For remote access, SSH-tunnel:
     #   ssh -L 9119:localhost:9119 <host>

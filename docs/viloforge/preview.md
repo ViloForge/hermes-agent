@@ -19,8 +19,12 @@ no separate repo (the registry tag is the distribution unit).
 ## Prerequisites
 
 - Docker + the Compose plugin.
-- A model-provider API key **only for functional testing** (chatting). The
-  rebranded chrome is visible without one.
+- Provider credentials **only for functional testing** (chatting) — the rebranded
+  chrome is visible without any. The preview is wired for two:
+  - **DeepSeek** — an API key from <https://platform.deepseek.com/>.
+  - **Claude Code subscription** — a long-lived token from `claude setup-token`
+    (needs the Claude Code CLI + an active subscription). The preview uses *your*
+    subscription quota via the anthropic provider's `claude-code` OAuth path.
 - **GHCR access.** If `ghcr.io/viloforge/hermes-agent` is a private package,
   authenticate once with a GitHub token that has `read:packages`:
   ```bash
@@ -28,24 +32,36 @@ no separate repo (the registry tag is the distribution unit).
   ```
   (Or make the package public in the ViloForge org's package settings.)
 
-## Quick start (dashboard)
+## Quick start — `preview.sh`
 
 ```bash
+./preview.sh seed     # one-time: store your DeepSeek key + Claude Code token
+./preview.sh start    # pull + run; prints the dashboard URL + seeded providers
+# open http://localhost:9119
+./preview.sh logs     # follow logs
+./preview.sh stop     # stop (keeps the throwaway data)
+./preview.sh reset    # stop + WIPE the throwaway data volume
+```
+
+`seed` writes a **git-ignored `.preview.env`** (template: `.preview.env.example`)
+and the credentials are passed to the container as env vars at runtime — they are
+never committed, baked into the image, or written to the data volume. Data lives in
+an **isolated throwaway volume** (`viloforge-preview-data`), not your real
+`~/.hermes`. The dashboard embeds the real TUI, so you also see the rebranded chat
+surface; switch models live in the dashboard (the seeded default is `HERMES_MODEL`,
+`deepseek-chat` out of the box).
+
+### Manual (without the wrapper)
+
+```bash
+# put DEEPSEEK_API_KEY / CLAUDE_CODE_OAUTH_TOKEN / HERMES_MODEL in your shell env, then:
 docker compose -f docker-compose.preview.yml pull
 docker compose -f docker-compose.preview.yml up -d
-# open the dashboard:
-xdg-open http://localhost:9119   # or just browse to it
-docker compose -f docker-compose.preview.yml logs -f   # watch startup
+docker compose -f docker-compose.preview.yml down -v   # stop + wipe
 ```
-
-The dashboard embeds the real TUI, so you see the rebranded chat surface too.
-Data lives in an **isolated throwaway volume** (`viloforge-preview-data`), not
-your real `~/.hermes`.
-
-Tear down (and wipe the throwaway data):
-```bash
-docker compose -f docker-compose.preview.yml down -v
-```
+The two provider keys use compose **bare passthrough** (`- DEEPSEEK_API_KEY`), so an
+unset key is simply not injected (no empty-key errors) and the provider is just
+unavailable.
 
 ## See the CLI banner / version directly
 
@@ -60,13 +76,13 @@ docker run -it --rm ghcr.io/viloforge/hermes-agent:preview
 
 ## Functional testing (optional)
 
-To actually chat, give the container a provider key — either uncomment one in the
-`environment:` block of `docker-compose.preview.yml`, or put it in an `.env` file
-beside the compose, e.g.:
+`./preview.sh seed` prompts for the DeepSeek key and the Claude Code token and
+writes `.preview.env`; `./preview.sh start` then boots with them. To add another
+provider, drop its var in `.preview.env` and add a matching `- VAR` line to
+`docker-compose.preview.yml`. Get the Claude Code token with:
+```bash
+claude setup-token      # requires the Claude Code CLI + an active subscription
 ```
-OPENROUTER_API_KEY=sk-or-...
-```
-then `docker compose -f docker-compose.preview.yml up -d` again.
 
 ## What to verify (rebrand checklist)
 
