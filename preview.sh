@@ -3,7 +3,9 @@
 # preview.sh — start/stop the ViloForge Agent preview (Tier-1 rebrand) locally.
 #
 # Quick use:
-#   ./preview.sh start       # AUTO-detects creds, pulls, runs; prints the URL
+#   ./preview.sh start       # AUTO-detects creds, PULLS the published image, runs
+#   ./preview.sh start --build  # BUILD the image from your working tree first, then run
+#                               # (reflects local/uncommitted changes; full multi-stage build, slow)
 #   ./preview.sh status      # show what's running + which providers were detected
 #   ./preview.sh stop        # stop (keeps the throwaway data volume)
 #   ./preview.sh logs        # follow logs
@@ -25,6 +27,8 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE_FILE="$REPO_DIR/docker-compose.preview.yml"
 SECRETS_FILE="${VILOFORGE_PREVIEW_ENV:-$REPO_DIR/.preview.env}"
 URL="http://localhost:9119"
+PUBLISHED_IMAGE="ghcr.io/viloforge/hermes-agent:preview"
+LOCAL_IMAGE="viloforge-agent:preview-local"   # tag for `--build` (working-tree image)
 
 # ---- docker compose v2 (plugin) with a legacy fallback -------------------------
 if docker compose version >/dev/null 2>&1; then
@@ -181,19 +185,34 @@ cmd_seed() {
 }
 
 cmd_start() {
+  local build=0 a
+  for a in "$@"; do [ "$a" = "--build" ] && build=1; done
   load_secrets
-  echo "Pulling ViloForge preview image…"
-  dc pull
+  if [ "$build" = 1 ]; then
+    # Build from the working tree and point compose at that image (overrides the
+    # default published image via VILOFORGE_PREVIEW_IMAGE in docker-compose.preview.yml).
+    export VILOFORGE_PREVIEW_IMAGE="$LOCAL_IMAGE"
+    echo "Building the preview image from your working tree → $LOCAL_IMAGE"
+    c_dim "  (full multi-stage build: Python + web dashboard + TUI bundle — first build is slow)"
+    docker build -f "$REPO_DIR/Dockerfile" -t "$LOCAL_IMAGE" \
+      --build-arg HERMES_GIT_SHA="$(git -C "$REPO_DIR" rev-parse --short HEAD 2>/dev/null || echo local)" \
+      "$REPO_DIR" || { echo "error: image build failed" >&2; return 1; }
+  else
+    echo "Pulling the published ViloForge preview image…"
+    dc pull
+  fi
   echo "Starting…"
   dc up -d
   echo
   c_ok "ViloForge Agent preview is up → $URL"
+  if [ "$build" = 1 ]; then c_dim "  image: $LOCAL_IMAGE  (built from your working tree)"
+  else c_dim "  image: $PUBLISHED_IMAGE  (published; use 'start --build' for local changes)"; fi
   provider_summary
   c_dim "  manage: re-run the launcher with  logs · status · stop · reset"
 }
 
 cmd_stop()    { dc down; c_ok "stopped (data volume kept; run 'start' again to resume)"; }
-cmd_restart() { cmd_stop; cmd_start; }
+cmd_restart() { cmd_stop; cmd_start "$@"; }
 cmd_logs()    { dc logs -f; }
 
 cmd_status() {
@@ -213,14 +232,17 @@ usage() {
   awk 'NR>=2 && /^#/ {sub(/^# ?/,""); print; next} NR>=2 {exit}' "${BASH_SOURCE[0]}"
 }
 
-case "${1:-start}" in
-  start|up)    cmd_start ;;
+cmd="${1:-start}"
+[ "$#" -gt 0 ] && shift
+case "$cmd" in
+  start|up)    cmd_start "$@" ;;
+  --build)     cmd_start --build "$@" ;;   # shorthand for `start --build`
   stop|down)   cmd_stop ;;
-  restart)     cmd_restart ;;
+  restart)     cmd_restart "$@" ;;
   logs|log)    cmd_logs ;;
   status|ps)   cmd_status ;;
   seed)        cmd_seed ;;
   reset)       cmd_reset ;;
   -h|--help|help) usage ;;
-  *) echo "unknown command: $1"; echo; usage; exit 1 ;;
+  *) echo "unknown command: $cmd"; echo; usage; exit 1 ;;
 esac

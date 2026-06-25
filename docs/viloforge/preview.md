@@ -38,7 +38,8 @@ no separate repo (the registry tag is the distribution unit).
 ## Quick start — `preview.sh`
 
 ```bash
-./preview.sh start    # AUTO-detects creds, pulls, runs; prints URL + detected providers
+./preview.sh start          # AUTO-detects creds, PULLS the published image, runs
+./preview.sh start --build  # BUILD the image from your working tree first, then run
 # open http://localhost:9119
 ./preview.sh status   # what's running + which providers were detected
 ./preview.sh logs     # follow logs
@@ -46,6 +47,22 @@ no separate repo (the registry tag is the distribution unit).
 ./preview.sh reset    # stop + WIPE the throwaway data volume
 ./preview.sh seed     # OPTIONAL: store creds explicitly in .preview.env
 ```
+
+### See *your* code, not the published image
+
+By default `start` **pulls** the prebuilt `ghcr.io/viloforge/hermes-agent:preview`
+image — it shows the *last published* preview, **not** your local changes. Two ways to
+preview current code:
+
+- **`./preview.sh start --build`** — builds the image from your **working tree**
+  (including uncommitted changes) and runs that. It's the full multi-stage build
+  (Python + web dashboard + TUI bundle), so the first build is slow; rebuilds are
+  cached. Compose uses the local tag via `VILOFORGE_PREVIEW_IMAGE`.
+- **Rebuild the published `:preview` from a pushed ref** (CI, ~5 min), then `start`:
+  ```bash
+  gh workflow run viloforge-publish.yml --repo ViloForge/hermes-agent --ref <branch-or-main>
+  ```
+  Use this to share a preview of a branch/PR; use `--build` for fast local iteration.
 
 **Credentials are resolved automatically** — no manual step. Per provider, first hit
 wins (an already-set env var always wins; empty values never clobber):
