@@ -25,7 +25,6 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE_FILE="$REPO_DIR/docker-compose.preview.yml"
 SECRETS_FILE="${VILOFORGE_PREVIEW_ENV:-$REPO_DIR/.preview.env}"
 URL="http://localhost:9119"
-DEFAULT_MODEL="deepseek-chat"
 
 # ---- docker compose v2 (plugin) with a legacy fallback -------------------------
 if docker compose version >/dev/null 2>&1; then
@@ -101,14 +100,17 @@ load_secrets() {
   elif v=$(_claude_token_from_credentials);                        then CLAUDE_CODE_OAUTH_TOKEN="$v"; CLAUDE_SRC="claude-live"
   fi
 
-  # Model (not a secret) — file value fills a gap, else default.
+  # Model: an OPTIONAL pin. Only honor an explicit value (env or .preview.env); do
+  # NOT force a default — HERMES_MODEL overrides the dashboard model picker (the
+  # tui_gateway reads it and ignores config.yaml), so defaulting it would make the
+  # picker a no-op. Unset ⇒ the dashboard picker / config.yaml controls the model.
   if [ -z "${HERMES_MODEL:-}" ]; then v=$(_from_envfile "$SECRETS_FILE" HERMES_MODEL) && HERMES_MODEL="$v" || true; fi
-  export HERMES_MODEL="${HERMES_MODEL:-$DEFAULT_MODEL}"
 
   # Export only non-empty (compose passes these with the bare `- VAR` form, so an
   # unset var is omitted rather than injected empty).
   if [ -n "${DEEPSEEK_API_KEY:-}" ]; then export DEEPSEEK_API_KEY; else unset DEEPSEEK_API_KEY 2>/dev/null || true; fi
   if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then export CLAUDE_CODE_OAUTH_TOKEN; else unset CLAUDE_CODE_OAUTH_TOKEN 2>/dev/null || true; fi
+  if [ -n "${HERMES_MODEL:-}" ]; then export HERMES_MODEL; else unset HERMES_MODEL 2>/dev/null || true; fi
 }
 
 provider_summary() {
@@ -128,7 +130,11 @@ provider_summary() {
     c_warn "  ! no provider creds found — chrome is visible but chat won't work."
     c_dim  "    set DEEPSEEK_API_KEY / run 'claude setup-token' / re-run the launcher with 'seed'"
   fi
-  c_dim "  default model: ${HERMES_MODEL:-$DEFAULT_MODEL}  (switch in the dashboard)"
+  if [ -n "${HERMES_MODEL:-}" ]; then
+    c_dim "  model: pinned to ${HERMES_MODEL} (HERMES_MODEL set — overrides the dashboard picker)"
+  else
+    c_dim "  model: choose in the dashboard's model picker (DeepSeek or a claude-* model)"
+  fi
 }
 
 cmd_seed() {
@@ -148,8 +154,8 @@ cmd_seed() {
   fi
   printf 'Claude Code OAuth token (paste, blank = skip): '
   read -rs cc; echo
-  printf 'Default model [%s]: ' "$DEFAULT_MODEL"
-  read -r mdl; mdl="${mdl:-$DEFAULT_MODEL}"
+  printf 'Pin a model? (blank = let the dashboard picker choose) [blank]: '
+  read -r mdl
 
   # Write the file (only overwrite keys the user provided; keep prior values otherwise).
   _set_kv() { # file key value
@@ -164,9 +170,9 @@ cmd_seed() {
   touch "$SECRETS_FILE"; chmod 600 "$SECRETS_FILE"
   _set_kv "$SECRETS_FILE" DEEPSEEK_API_KEY "$ds"
   _set_kv "$SECRETS_FILE" CLAUDE_CODE_OAUTH_TOKEN "$cc"
-  # model always recorded (not a secret)
+  # Model pin is optional — only record it if the user gave one (else the picker rules).
   grep -vE '^HERMES_MODEL=' "$SECRETS_FILE" > "$SECRETS_FILE.tmp" 2>/dev/null && mv "$SECRETS_FILE.tmp" "$SECRETS_FILE" || true
-  printf 'HERMES_MODEL=%s\n' "$mdl" >> "$SECRETS_FILE"
+  [ -n "$mdl" ] && printf 'HERMES_MODEL=%s\n' "$mdl" >> "$SECRETS_FILE"
 
   # Lock down perms LAST — the grep>tmp>mv rewrites above recreate the file with
   # the default umask (644), so chmod must come after every write.
