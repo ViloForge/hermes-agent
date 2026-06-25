@@ -101,8 +101,67 @@ chose "add a fork notice now"). Scope includes docstrings/comments (operator cho
 per PR; verify each before the next. Tier 4 is not a step — it is the exclusion
 boundary enforced throughout.
 
+## Testing & enforcement (execution detail for ADR-0004)
+
+> The *decision* — machine-enforce D4, tested transform, invariants over brand
+> literals — is [ADR-0004](../../adr/ADR-0004-machine-enforce-do-not-touch-and-rebrand-test-strategy.md).
+> This section is the *how*. Five layers, each mapped to a failure mode (Fn).
+
+- **L1 — Tested transform helper (prevention; F1).** Promote the apply logic out of
+  `scratchpad/` into a tested module under `docs/viloforge/rebrand/` (beside the guard
+  it consumes), e.g. `rebrand_apply.py` exposing a pure
+  `rebrand_text(text, mapping) -> text` that replaces brand tokens **outside**
+  `protected_spans(text, include_tier3=True)` + `_EXTRA_PROTECT`. Unit-test the regex
+  edge cases once: `X-Hermes-*` headers, `HermesCLI`/`updateHermes`-style identifiers,
+  model IDs `hermes-[0-9]`, `Nous Hermes`, and the fork-notice context ("a ViloForge
+  fork of Hermes Agent" must survive). Every remaining slice imports this instead of
+  re-deriving regexes.
+- **L2 — Diff-scoped do-not-touch gate (verification; F1), hard CI + local.** ✅ built:
+  `docs/viloforge/rebrand/diff_gate.py` takes `git diff <merge-base>...HEAD` and flags
+  any **added** line containing a **corruption signature** — a protected token in its
+  rebranded/broken form (`x-viloforge-`, `viloforge-[0-9]`, `viloforge_cli`,
+  `VILOFORGE_[A-Z]`, `Nous ViloForge`, `viloforge-agent.nousresearch`, …). NOT
+  "added-line-is-protected" — that false-fails a correctly rebranded line that still
+  carries a *preserved* skeleton token (e.g. `ViloForge Agent uses hermes_cli`); see
+  ADR-0004 D1. Signatures derive from `exclusions.all_patterns()` + the brand mapping
+  (one source of truth) and a test pins completeness. Honors `path_excluded`; suppress a
+  rare false positive with the in-line marker `rebrand-gate: ok`. Wired as (a) a
+  documented pre-PR command and (b) the `rebrand-guard` CI job (`rebrand-guard.yml`,
+  added to `ci.yml`'s sub-workflows + `all-checks-pass`), which blocks merge.
+  Diff-scoped against the merge base ⇒ `--merge` upstream syncs don't trip it.
+  - **Guard gap closed en route:** the live `exclusions.py` did **not** protect the
+    `X-Hermes-*` headers (mixed-case, so `HERMES_[A-Z]` missed them) — the kb gotcha's
+    claim that Tier-1b added it to the guard was inaccurate; it only ever lived in the
+    throwaway scripts. Added `x-hermes-` to the Tier-3 skeleton set, plus title-case
+    `Nous Hermes` / `Hermes N` model-family prose to D4.2 (all-caps `NOUS HERMES` banner
+    deliberately left rebrandable). **Operator-ratifiable** (extends D4.2 enforcement
+    beyond ADR-0003's hyphenated patterns; over-protection → safe direction).
+- **L3 — Per-slice completeness check (F4).** Acceptance-checklist grep, not a permanent
+  test: within the slice's declared scope, assert **zero** residual old-brand display
+  tokens **and** the new brand present. Run before opening the slice PR.
+- **L4 — Opportunistic in-scope invariant conversion (F2/F3).** For display
+  change-detector tests *in the current slice's scope only*, convert literal-brand
+  assertions to behavioral invariants (assert the *configured* name, not `"Hermes
+  Agent"`). Leave parameterized/functional uses (e.g. `_looks_like_human_speaker(s,
+  name)` — name is an arg) and out-of-scope plugin tests untouched. No new
+  change-detector/count tests.
+- **L5 — Local-run tightening (F5).** Derive the exact affected test-file list from the
+  L3 grep (old+new tokens across `tests/`), run that subset locally for fast feedback;
+  full suite via `scripts/run_tests.sh` + CI before merge. (CI per-job blob logs are
+  unreachable from this WSL env — use the run-log ZIP: `gh api
+  repos/ViloForge/hermes-agent/actions/runs/RUN_ID/logs`.)
+
+**Build order:** L1 + L2 first (they retire the catastrophic F1 mode and become the
+reusable verification artifact every later slice needs), shipped as their own PR ahead
+of the next rebrand slice; L3/L4/L5 then ride as per-slice discipline.
+
 ## Resolved execution sub-decisions
 
 - **First-sync timing (ADR-0002 point 4 open sub-decision):** ✅ resolved — synced to
   upstream HEAD first (PR #4), then diverge. (Was: sync-first vs. rebrand on today's base.)
 - **Sync merge mechanic:** ✅ resolved — `--merge`, never squash (see Pre-flight 3).
+- **Do-not-touch enforcement (ADR-0003 D4 trust model):** ✅ resolved (ADR-0004) —
+  machine-enforced via a diff-scoped CI gate (hard, blocks merge) + local pre-PR, not
+  human hunk-review alone. (Was: manual "net protected-token change ≥ 0" eyeball.)
+- **Rebrand transform artifact:** ✅ resolved (ADR-0004 D3) — tested, version-controlled
+  helper consuming the guard, not per-slice `scratchpad/` scripts.
