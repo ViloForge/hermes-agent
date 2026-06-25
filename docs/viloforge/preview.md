@@ -57,7 +57,7 @@ preview current code:
 - **`./preview.sh start --build`** — builds the image from your **working tree**
   (including uncommitted changes) and runs that. It's the full multi-stage build
   (Python + web dashboard + TUI bundle), so the first build is slow; rebuilds are
-  cached. Compose uses the local tag via `VILOFORGE_PREVIEW_IMAGE`.
+  cached. Compose uses the local tag via `PREVIEW_IMAGE`.
 - **Rebuild the published `:preview` from a pushed ref** (CI, ~5 min), then `start`:
   ```bash
   gh workflow run viloforge-publish.yml --repo ViloForge/hermes-agent --ref <branch-or-main>

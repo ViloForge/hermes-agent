@@ -190,8 +190,8 @@ cmd_start() {
   load_secrets
   if [ "$build" = 1 ]; then
     # Build from the working tree and point compose at that image (overrides the
-    # default published image via VILOFORGE_PREVIEW_IMAGE in docker-compose.preview.yml).
-    export VILOFORGE_PREVIEW_IMAGE="$LOCAL_IMAGE"
+    # default published image via PREVIEW_IMAGE in docker-compose.preview.yml).
+    export PREVIEW_IMAGE="$LOCAL_IMAGE"
     echo "Building the preview image from your working tree → $LOCAL_IMAGE"
     c_dim "  (full multi-stage build: Python + web dashboard + TUI bundle — first build is slow)"
     docker build -f "$REPO_DIR/Dockerfile" -t "$LOCAL_IMAGE" \

@@ -33,9 +33,9 @@ name: viloforge-preview
 services:
   dashboard:
     # Published GHCR image by default; `./preview.sh start --build` sets
-    # VILOFORGE_PREVIEW_IMAGE to a locally-built tag so the preview reflects your
+    # PREVIEW_IMAGE to a locally-built tag so the preview reflects your
     # working tree.
-    image: ${VILOFORGE_PREVIEW_IMAGE:-ghcr.io/viloforge/hermes-agent:preview}
+    image: ${PREVIEW_IMAGE:-ghcr.io/viloforge/hermes-agent:preview}
     container_name: viloforge-preview
     restart: unless-stopped
     # Host networking matches the project's default compose; the dashboard binds
