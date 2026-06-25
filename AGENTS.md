@@ -96,6 +96,10 @@ derived from the whole repo.** Four rules so it can't recur:
    clean browser profile.** Persisted client state (localStorage) and stale bundles
    lie — cross-check the rendered string against what the build/API actually emits.
 
+Why graph **and** grep (with the empirical evidence): a knowledge graph finds
+*surfaces* (rule 1), grep finds *tokens* (rules 2–3) — neither substitutes for the
+other. See [`docs/viloforge/knowledge-graph-vs-grep.md`](./docs/viloforge/knowledge-graph-vs-grep.md).
+
 ### Upstream relationship
 
 Governed by **[ADR-0002](./docs/adr/ADR-0002-upstream-relationship-and-divergence-strategy.md)**
