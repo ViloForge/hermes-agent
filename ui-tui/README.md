@@ -1,6 +1,6 @@
-# Hermes TUI
+# ViloForge TUI
 
-React + Ink terminal UI for Hermes. TypeScript owns the screen. Python owns sessions, tools, model calls, and most command logic.
+React + Ink terminal UI for ViloForge. TypeScript owns the screen. Python owns sessions, tools, model calls, and most command logic.
 
 ```bash
 hermes --tui
