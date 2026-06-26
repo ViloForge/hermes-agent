@@ -353,6 +353,11 @@ markers = [
 ]
 # integration tests take way too long to run in the normal CI environments
 addopts = "-m 'not integration'"
+# Dump every thread's stack if a single test runs longer than 110s, then let it
+# continue. Permanent hygiene below the 140s per-file SIGKILL: a future in-test
+# hang surfaces a traceback instead of an opaque kill. (Re-added — the original
+# add in a9f03bff3 was dropped by a squash merge.)
+faulthandler_timeout = 110
 
 [tool.ty.environment]
 python-version = "3.13"
