@@ -33,8 +33,15 @@ def hermes_home(tmp_path, monkeypatch):
     goals._DB_CACHE.clear()
 
 
-@pytest.fixture()
-def server(hermes_home):
+@pytest.fixture(scope="module")
+def _server_module():
+    # Import tui_gateway.server ONCE per file (real hermes_state/hermes_constants;
+    # only env_loader/banner mocked). A per-test ``patch.dict("sys.modules", …)``
+    # evicts the lazily-imported hermes_cli command registry on exit, so every test
+    # re-imports ~9k modules (~2s each) — the runtime blow-up that pushes the file
+    # past CI's 140s per-file timeout. Module scope enters/exits the patch once
+    # (PR #19). Per-test HERMES_HOME / goals-DB-cache isolation stays on the
+    # function-scoped ``hermes_home`` fixture below.
     with patch.dict(
         "sys.modules",
         {
@@ -42,19 +49,22 @@ def server(hermes_home):
             "hermes_cli.banner": MagicMock(),
         },
     ):
-        mod = importlib.import_module("tui_gateway.server")
-        yield mod
-        # Reset module-level session state without re-importing. importlib.reload
-        # would re-register the module's atexit hooks (ThreadPoolExecutor
-        # shutdown, _shutdown_sessions); the duplicates race the stderr
-        # buffer at interpreter shutdown and surface as Fatal Python error:
-        # _enter_buffered_busy. Clearing the per-session dicts gives the
-        # next test a clean slate; _methods is NOT cleared because it's
-        # populated at module import time and re-registration only happens
-        # via reload (which we don't do).
-        mod._sessions.clear()
-        mod._pending.clear()
-        mod._answers.clear()
+        yield importlib.import_module("tui_gateway.server")
+
+
+@pytest.fixture()
+def server(_server_module, hermes_home):
+    mod = _server_module
+    yield mod
+    # Reset module-level session state per test (the module is shared across the
+    # file). importlib.reload is intentionally NOT used — it would re-register the
+    # module's atexit hooks (ThreadPoolExecutor shutdown, _shutdown_sessions),
+    # whose duplicates race the stderr buffer at interpreter shutdown
+    # (Fatal Python error: _enter_buffered_busy). _methods is NOT cleared — it is
+    # populated once at import time and only re-registered via reload.
+    mod._sessions.clear()
+    mod._pending.clear()
+    mod._answers.clear()
 
 
 @pytest.fixture()
