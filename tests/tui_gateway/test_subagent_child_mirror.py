@@ -15,8 +15,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 
-@pytest.fixture()
-def server():
+@pytest.fixture(scope="module")
+def _server_module():
+    # Import tui_gateway.server ONCE per file with heavy/unwanted deps mocked.
+    # A per-test ``patch.dict("sys.modules", …)`` evicts the lazily-imported
+    # hermes_cli command registry on exit, so every test re-imports ~9k modules
+    # (~2s each) — the runtime blow-up that pushes the file past CI's 140s
+    # per-file timeout. Module scope enters/exits the patch once (PR #19).
     with patch.dict(
         "sys.modules",
         {
@@ -30,13 +35,19 @@ def server():
     ):
         import importlib
 
-        mod = importlib.import_module("tui_gateway.server")
-        yield mod
-        mod._sessions.clear()
-        mod._pending.clear()
-        mod._answers.clear()
-        mod._child_mirrors.clear()
-        mod._active_child_runs.clear()
+        yield importlib.import_module("tui_gateway.server")
+
+
+@pytest.fixture()
+def server(_server_module):
+    mod = _server_module
+    yield mod
+    # Per-test state reset (the module is shared across the file).
+    mod._sessions.clear()
+    mod._pending.clear()
+    mod._answers.clear()
+    mod._child_mirrors.clear()
+    mod._active_child_runs.clear()
 
 
 @pytest.fixture()
