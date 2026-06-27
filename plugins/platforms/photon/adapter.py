@@ -1,5 +1,5 @@
 """
-Photon Spectrum (iMessage) platform adapter for Hermes Agent.
+Photon Spectrum (iMessage) platform adapter for ViloForge Agent.
 
 Both directions of traffic flow through a small supervised Node sidecar
 (see ``sidecar/index.mjs``) that runs the ``spectrum-ts`` SDK — the SDK is
@@ -49,7 +49,7 @@ else:
     try:
         import httpx
         HTTPX_AVAILABLE = True
-    except ImportError:  # pragma: no cover - httpx is already a Hermes dep
+    except ImportError:  # pragma: no cover - httpx is already a ViloForge dep
         HTTPX_AVAILABLE = False
         httpx = None
 
@@ -279,7 +279,7 @@ class PhotonAdapter(BasePlatformAdapter):
         """Compile group-mention wake words from config/env.
 
         ``raw`` is a list (config or env JSON), a string (env var: JSON
-        list, or comma/newline-separated), or None (use Hermes defaults).
+        list, or comma/newline-separated), or None (use ViloForge defaults).
         Mirrors the BlueBubbles implementation so both iMessage channels
         accept the same configuration shapes.
         """
@@ -756,7 +756,7 @@ class PhotonAdapter(BasePlatformAdapter):
             )
         except (OSError, subprocess.TimeoutExpired):
             return False
-        # Checkout-agnostic: any Hermes checkout's sidecar entry point.
+        # Checkout-agnostic: any ViloForge checkout's sidecar entry point.
         return "photon/sidecar/index.mjs" in out.stdout
 
     @staticmethod
@@ -1402,7 +1402,7 @@ class PhotonAdapter(BasePlatformAdapter):
         to a plain audio attachment on platforms without voice notes),
         otherwise ``"attachment"``. spectrum-ts infers ``name`` and
         ``mimeType`` from the file extension; we only pass overrides when
-        Hermes supplied them.
+        ViloForge supplied them.
         """
         # Defense-in-depth: re-validate the path before handing it to the
         # Node sidecar. The gateway already filters MEDIA paths, but
@@ -1642,7 +1642,7 @@ async def _standalone_send(
 # Plugin entry point
 
 def register(ctx) -> None:
-    """Called by the Hermes plugin loader at startup."""
+    """Called by the ViloForge plugin loader at startup."""
     # Local import to avoid argparse work at module load; reused for both the
     # gateway-setup hook and the `hermes photon` CLI command below.
     from . import cli as _cli
