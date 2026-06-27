@@ -74,7 +74,9 @@ class SelfExemptAndSurfaces(unittest.TestCase):
         for p in ("docs/viloforge/rebrand/completeness.py",
                   "docs/adr/ADR-0003-rebrand-identity-and-tiering.md",
                   "AGENTS.md", "CLAUDE.md",
-                  ".understand-anything/knowledge-graph.json"):
+                  ".understand-anything/knowledge-graph.json",
+                  # third-party attribution content (real testimonials) — never rebranded
+                  "website/src/data/userStories.json"):
             self.assertTrue(c._self_exempt(p), p)
 
     def test_product_paths_not_exempt(self):

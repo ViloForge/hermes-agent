@@ -33,10 +33,12 @@ jobs:
           git fetch --no-tags origin main:refs/remotes/origin/main
           python3 docs/viloforge/rebrand/diff_gate.py --base origin/main --head HEAD
 
-      # Informational while the rebrand is in flight — the repo still has residual
-      # display tokens (Tier-1d/2 unfinished), so this reports the per-surface
-      # work-list rather than failing. It becomes a HARD gate per surface as each
-      # tier lands: add `--surface <s> --max 0` to fail if a *completed* surface
-      # regresses. (ADR-0004 L3, repo-wide.)
-      - name: Completeness sweep (residual display-brand tokens, report-only)
-        run: python3 docs/viloforge/rebrand/completeness.py
+      # HARD repo-wide gate (ADR-0004 L3). Tier-1d display rebrand is COMPLETE —
+      # every product surface (CLI, TUI, Web, Docs, Desktop, Gateway, Plugins,
+      # Skills, Agent core, Tests, Other) is at zero residual display-brand tokens.
+      # This fails any PR that reintroduces a `\bHermes\b` display token outside the
+      # do-not-touch boundary (Tier-3 skeleton / Nous) and the intentional-keep set
+      # (fork notices, copyright, third-party attribution). The exemption surface is
+      # the source of truth; widen it deliberately, never to mask a real residual.
+      - name: Completeness gate (zero residual display-brand tokens, repo-wide)
+        run: python3 docs/viloforge/rebrand/completeness.py --max 0
