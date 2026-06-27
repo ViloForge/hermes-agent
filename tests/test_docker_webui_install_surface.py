@@ -1,4 +1,4 @@
-"""Guards for the multi-container Hermes WebUI install surface."""
+"""Guards for the multi-container ViloForge WebUI install surface."""
 
 from __future__ import annotations
 

@@ -100,26 +100,26 @@ class TestCompactBannerSkinIntegration:
             banner = _build_compact_banner()
 
         # Tier-1 rebrand: the default framework banner now reads VILOFORGE
-        # (was the legacy "NOUS HERMES" product wording).
+        # (was the legacy "NOUS HERMES" product wording).  # completeness-gate: keep
         assert "VILOFORGE" in banner
-        assert "NOUS HERMES" not in banner
+        assert "NOUS HERMES" not in banner  # completeness-gate: keep (asserts legacy framework banner absent)
 
     def test_poseidon_compact_banner_uses_skin_branding_instead_of_nous_hermes(self):
         set_active_skin("poseidon")
 
         with patch("cli.shutil.get_terminal_size", return_value=SimpleNamespace(columns=90)), \
-             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Hermes Agent v0.1.0 (test)"}):
+             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "ViloForge Agent v0.1.0 (test)"}):
             banner = _build_compact_banner()
 
         assert "Poseidon Agent" in banner
-        assert "NOUS HERMES" not in banner
+        assert "NOUS HERMES" not in banner  # completeness-gate: keep (asserts legacy framework banner absent)
 
     def test_poseidon_compact_banner_uses_skin_colors(self):
         set_active_skin("poseidon")
         skin = get_active_skin()
 
         with patch("cli.shutil.get_terminal_size", return_value=SimpleNamespace(columns=90)), \
-             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Hermes Agent v0.1.0 (test)"}):
+             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "ViloForge Agent v0.1.0 (test)"}):
             banner = _build_compact_banner()
 
         assert skin.get_color("banner_border") in banner
@@ -130,7 +130,7 @@ class TestCompactBannerSkinIntegration:
         set_active_skin("default")
 
         with patch("cli.shutil.get_terminal_size", return_value=SimpleNamespace(columns=90)), \
-             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "Hermes Agent v1.0 (test) · upstream abc12345"}):
+             patch.dict(_build_compact_banner.__globals__, {"format_banner_version_label": lambda: "ViloForge Agent v1.0 (test) · upstream abc12345"}):
             banner = _build_compact_banner()
 
         assert "upstream abc12345" in banner
