@@ -1,5 +1,5 @@
 """
-Hermes CLI - Unified command-line interface for Hermes Agent.
+ViloForge CLI - Unified command-line interface for ViloForge Agent.
 
 Provides subcommands for:
 - hermes chat          - Interactive chat (same as ./hermes)
