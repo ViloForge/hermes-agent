@@ -60,7 +60,7 @@ test('resolveUnpackedRelease is null for AppImage / .deb / .rpm / dev / unresolv
   assert.equal(resolveUnpackedRelease('/tmp/.mount_Hermes12345/AppRun', ROOT, 'linux'), null)
   // .deb / .rpm system install
   assert.equal(resolveUnpackedRelease('/usr/lib/hermes/hermes', ROOT, 'linux'), null)
-  assert.equal(resolveUnpackedRelease('/opt/Hermes/hermes', ROOT, 'linux'), null)
+  assert.equal(resolveUnpackedRelease('/opt/ViloForge/hermes', ROOT, 'linux'), null)
   // dev electron
   assert.equal(resolveUnpackedRelease('/home/u/.hermes/hermes-agent/node_modules/electron/dist/electron', ROOT, 'linux'), null)
   // empty / missing
@@ -184,7 +184,7 @@ test('shellQuote neutralizes single quotes and metacharacters', () => {
 test('buildRelaunchScript embeds pid/exec/args/env/cwd and is valid bash', () => {
   const script = buildRelaunchScript({
     pid: 4242,
-    execPath: '/home/u/.hermes/hermes-agent/apps/desktop/release/linux-unpacked/Hermes',
+    execPath: '/home/u/.hermes/hermes-agent/apps/desktop/release/linux-unpacked/ViloForge',
     args: ['hermes://open/agent/42', "--note=it's fine"],
     env: { HERMES_HOME: '/home/u/.hermes', HERMES_DESKTOP_REMOTE_URL: 'http://box:9119' },
     cwd: '/home/u/work dir'
@@ -199,7 +199,7 @@ test('buildRelaunchScript embeds pid/exec/args/env/cwd and is valid bash', () =>
   assert.match(script, /export HERMES_HOME='\/home\/u\/\.hermes'/)
   assert.match(script, /export HERMES_DESKTOP_REMOTE_URL='http:\/\/box:9119'/)
   assert.match(script, /cd '\/home\/u\/work dir'/)
-  assert.match(script, /exec '.*\/linux-unpacked\/Hermes' 'hermes:\/\/open\/agent\/42' '--note=it'\\''s fine'/)
+  assert.match(script, /exec '.*\/linux-unpacked\/ViloForge' 'hermes:\/\/open\/agent\/42' '--note=it'\\''s fine'/)
 
   // It must be syntactically valid bash (`bash -n`). Write to a temp file and lint.
   const tmp = path.join(os.tmpdir(), `hermes-relaunch-test-${Date.now()}.sh`)
@@ -214,7 +214,7 @@ test('buildRelaunchScript embeds pid/exec/args/env/cwd and is valid bash', () =>
 test('buildRelaunchScript with no args/env still lints clean', () => {
   const script = buildRelaunchScript({
     pid: 1,
-    execPath: '/opt/Hermes/Hermes',
+    execPath: '/opt/ViloForge/ViloForge',
     args: [],
     env: {},
     cwd: ''
@@ -227,5 +227,5 @@ test('buildRelaunchScript with no args/env still lints clean', () => {
     fs.rmSync(tmp, { force: true })
   }
   // exec line has no trailing args.
-  assert.match(script, /exec '\/opt\/Hermes\/Hermes'\n/)
+  assert.match(script, /exec '\/opt\/ViloForge\/ViloForge'\n/)
 })
