@@ -172,7 +172,7 @@ def _connect(board: Optional[str] = None):
     default) preserves the legacy resolution chain
     (``HERMES_KANBAN_DB`` → ``HERMES_KANBAN_BOARD`` env → current symlink
     → ``default``). Per-tool ``board`` lets a Telegram-side agent override
-    the env-pinned active board without restarting Hermes.
+    the env-pinned active board without restarting ViloForge.
     """
     from hermes_cli import kanban_db as kb
     return kb, kb.connect(board=board)
