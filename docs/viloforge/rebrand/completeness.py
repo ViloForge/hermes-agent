@@ -68,12 +68,25 @@ _SELF_EXEMPT_PREFIXES = (
 )
 _SELF_EXEMPT_FILES = ("AGENTS.md", "CLAUDE.md")
 
+# Third-party ATTRIBUTION content — verbatim testimonials/quotes harvested from real
+# people (Discord/X/GitHub/LinkedIn/...), each with a real author handle + URL + date.
+# Rewriting "Hermes"->"ViloForge" in someone's real quote would fabricate an endorsement
+# they never gave (and claim the upstream product's social proof as ours), so the whole
+# file is intentional-keep — same principle as the MIT author / NousResearch links
+# (operator decision, 2026-06-27). Whether a *fork* should display upstream testimonials
+# at all is a separate product/Tier-2 question, not a display-brand rebrand.
+_ATTRIBUTION_EXEMPT_FILES = ("website/src/data/userStories.json",)
+
 
 def _self_exempt(relpath: str) -> bool:
     rp = relpath.replace("\\", "/")
     if rp.startswith("./"):
         rp = rp[2:]
-    return rp.startswith(_SELF_EXEMPT_PREFIXES) or rp in _SELF_EXEMPT_FILES
+    return (
+        rp.startswith(_SELF_EXEMPT_PREFIXES)
+        or rp in _SELF_EXEMPT_FILES
+        or rp in _ATTRIBUTION_EXEMPT_FILES
+    )
 
 
 # Surface attribution — the five display surfaces + structural buckets. Order matters
