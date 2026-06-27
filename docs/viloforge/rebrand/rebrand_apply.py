@@ -47,11 +47,21 @@ DEFAULT_MAPPING: Dict[str, str] = {
 
 def _build_regex(mapping: Dict[str, str]) -> "re.Pattern[str]":
     # Longest first so multi-word tokens win over the bare "Hermes". Each token
-    # is wrapped in word boundaries; case-sensitive (no IGNORECASE) so the
+    # is wrapped in ASCII-only boundaries; case-sensitive (no IGNORECASE) so the
     # lowercase package token `hermes-agent` and model IDs are never matched here.
+    #
+    # We use explicit ASCII lookarounds — (?<![A-Za-z0-9_]) / (?![A-Za-z0-9_]) —
+    # NOT Python's `\b`. `\b` is Unicode-aware: a CJK/accented letter counts as a
+    # word char, so `\bHermes\b` does NOT match "Hermes" when it is glued directly
+    # to a non-ASCII letter (e.g. the Korean "Hermes가" or Chinese "Hermes를").
+    # That silently skipped display residuals in CJK i18n strings (caught only by a
+    # live preview, since `completeness` reuses this same regex). The ASCII
+    # lookarounds still protect identifiers (`HermesAgent`, `updateHermes`,
+    # `Hermes_x`) exactly as `\b` did, while treating the boundary with any
+    # non-ASCII-word character as rebrandable.
     keys = sorted(mapping, key=len, reverse=True)
     alt = "|".join(re.escape(k) for k in keys)
-    return re.compile(r"\b(?:" + alt + r")\b")
+    return re.compile(r"(?<![A-Za-z0-9_])(?:" + alt + r")(?![A-Za-z0-9_])")
 
 
 def _overlaps(ms: int, me: int, spans: List[Tuple[int, int, str]]) -> bool:
