@@ -360,7 +360,7 @@ def parse_schedule(schedule: str) -> Dict[str, Any]:
             # Make naive timestamps timezone-aware at parse time so the stored
             # value doesn't depend on the system timezone matching at check time.
             #
-            # Anchor to the CONFIGURED Hermes timezone, not the server's local
+            # Anchor to the CONFIGURED ViloForge timezone, not the server's local
             # timezone. The due-check (`get_due_jobs`) compares `next_run_at`
             # against `hermes_time.now()`, which uses the configured zone. If a
             # naive "20:07" were interpreted as server-local (e.g. UTC) while
@@ -402,13 +402,13 @@ def parse_schedule(schedule: str) -> Dict[str, Any]:
 
 
 def _ensure_aware(dt: datetime) -> datetime:
-    """Return a timezone-aware datetime in Hermes configured timezone.
+    """Return a timezone-aware datetime in ViloForge configured timezone.
 
     Backward compatibility:
     - Older stored timestamps may be naive.
     - Naive values are interpreted as *system-local wall time* (the timezone
       `datetime.now()` used when they were created), then converted to the
-      configured Hermes timezone.
+      configured ViloForge timezone.
 
     This preserves relative ordering for legacy naive timestamps across
     timezone changes and avoids false not-due results.
@@ -435,7 +435,7 @@ def _timezone_offset_mismatch(stored: datetime, current: datetime) -> bool:
 def _stored_wall_clock_is_future(stored: datetime, current: datetime) -> bool:
     """Return True when the stored local wall-clock time has not arrived yet.
 
-    Cron schedules express local wall-clock intent. If Hermes/system local time
+    Cron schedules express local wall-clock intent. If ViloForge/system local time
     changes after next_run_at was persisted, an old offset can make a future
     wall-clock run look due at the converted absolute time (for example
     21:00+10 becomes 13:00+02). Comparing naive wall-clock values lets us

@@ -30,7 +30,7 @@
           uv
         ];
         shellHook = ''
-          echo "Hermes Agent dev shell"
+          echo "ViloForge Agent dev shell"
           ${combinedNonNpm}
           ${hermesNpmLib.mkNpmDevShellHook npmPackageJsonPaths}
           echo "Ready. Run 'hermes' to start."

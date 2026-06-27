@@ -6,7 +6,7 @@
 
 > **ViloForge Agent** 是 [Hermes Agent](https://github.com/NousResearch/hermes-agent) 的
 > [ViloForge](https://github.com/ViloForge) 分支，最初由 [Nous Research](https://nousresearch.com)
-> 创建（MIT 许可）。我们正在将产品外观重命名为 ViloForge；上游的 Hermes/Nous 标识符（Nous Portal
+> 创建（MIT 许可）。我们正在将产品外观重命名为 ViloForge；上游的 ViloForge/Nous 标识符（Nous Portal
 > 提供方、`hermes-3/4` 模型 ID 以及 `hermes_cli` 内部实现）均有意保留。
 
 <p align="center">

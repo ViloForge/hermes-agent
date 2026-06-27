@@ -7,7 +7,7 @@
 > **ViloForge Agent** es un fork de [ViloForge](https://github.com/ViloForge) de
 > [Hermes Agent](https://github.com/NousResearch/hermes-agent), creado originalmente por
 > [Nous Research](https://nousresearch.com) (MIT). Estamos renombrando la superficie del
-> producto a ViloForge; los identificadores upstream de Hermes/Nous (el proveedor Nous
+> producto a ViloForge; los identificadores upstream de ViloForge/Nous (el proveedor Nous
 > Portal, los IDs de modelo `hermes-3/4` y los internos `hermes_cli`) se conservan
 > intencionadamente.
 

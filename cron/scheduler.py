@@ -311,7 +311,7 @@ _hermes_home: Path | None = None
 
 
 def _get_hermes_home() -> Path:
-    """Resolve Hermes home dynamically while preserving test monkeypatch hooks."""
+    """Resolve ViloForge home dynamically while preserving test monkeypatch hooks."""
     return _hermes_home or get_hermes_home()
 
 
@@ -1192,7 +1192,7 @@ def _run_job_script(script_path: str) -> tuple[bool, str]:
     (the `memory-watchdog.sh` pattern) without wrapping them in Python.
 
     Subprocess environment is passed through ``_sanitize_subprocess_env`` so
-    provider credentials and other Hermes-managed secrets are not inherited
+    provider credentials and other ViloForge-managed secrets are not inherited
     (SECURITY.md §2.3), matching terminal and MCP child processes.
 
     Args:
