@@ -59,6 +59,27 @@ class LeavesIdentifiersIntact(unittest.TestCase):
         self.assertEqual(ra.rebrand_text(s), s)
 
 
+class CjkAdjacency(unittest.TestCase):
+    """`\\bHermes\\b` is Unicode-aware and skips brand tokens glued to a CJK /
+    accented letter (the boundary char counts as a word char). The ASCII
+    lookaround boundaries must still rebrand these display residuals — the
+    blind spot a live preview caught in the i18n bundles."""
+
+    def test_brand_glued_to_cjk_is_rebranded(self):
+        # Korean particles glued directly to the brand token (no space).
+        self.assertEqual(ra.rebrand_text("Hermes가 신호를 감지"), "ViloForge가 신호를 감지")
+        self.assertEqual(ra.rebrand_text("Hermes를 더 사용"), "ViloForge를 더 사용")
+        # Leading CJK char immediately before the brand token.
+        self.assertEqual(ra.rebrand_text("私のHermes"), "私のViloForge")
+        # Accented (Latin-1) letter adjacency also counts as a word char for \b.
+        self.assertEqual(ra.rebrand_text("Hermesé"), "ViloForgeé")
+
+    def test_cjk_adjacency_still_protects_identifiers(self):
+        # ASCII-letter/digit/underscore adjacency must remain protected.
+        for s in ("class HermesCLI:", "updateHermes(x)", "Hermes_home"):
+            self.assertEqual(ra.rebrand_text(s), s, s)
+
+
 class NeverCorruptsProtected(unittest.TestCase):
     """The do-not-touch boundary + the deferred skeleton survive byte-for-byte."""
 
