@@ -55,6 +55,7 @@ INTENTIONAL_KEEP: List["re.Pattern[str]"] = [
     re.compile(r"\bforked from\b", re.IGNORECASE),
     re.compile(r"Built by Nous", re.IGNORECASE),        # attribution footer
     re.compile(r"NousResearch/hermes-agent", re.IGNORECASE),  # attribution links to the upstream repo
+    re.compile(r"Copyright \(c\)", re.IGNORECASE),      # copyright notices = attribution; never brand-rebrand (e.g. vendored third-party plugin LICENSEs)
     re.compile(r"completeness-gate:\s*keep"),           # explicit in-line opt-out marker
 ]
 

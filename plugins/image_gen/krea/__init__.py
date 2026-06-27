@@ -67,7 +67,7 @@ _MODELS: Dict[str, Dict[str, Any]] = {
 
 DEFAULT_MODEL = "krea-2-medium"
 
-# Hermes uses 3 abstract aspect ratios. Map to Krea's enum (which is wider).
+# ViloForge uses 3 abstract aspect ratios. Map to Krea's enum (which is wider).
 # Krea accepts: 1:1, 4:3, 3:2, 16:9, 2.35:1, 4:5, 2:3, 9:16
 _ASPECT_MAP = {
     "landscape": "16:9",
@@ -311,7 +311,7 @@ class KreaImageGenProvider(ImageGenProvider):
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "User-Agent": "Hermes-Agent/1.0 (krea-image-gen)",
+            "User-Agent": "ViloForge-Agent/1.0 (krea-image-gen)",
         }
 
         # 1. Submit job.
@@ -391,7 +391,7 @@ class KreaImageGenProvider(ImageGenProvider):
         job_url = f"{BASE_URL}/jobs/{job_id}"
         poll_headers = {
             "Authorization": f"Bearer {api_key}",
-            "User-Agent": "Hermes-Agent/1.0 (krea-image-gen)",
+            "User-Agent": "ViloForge-Agent/1.0 (krea-image-gen)",
         }
         interval = _POLL_INITIAL_INTERVAL
         deadline = time.monotonic() + _POLL_TIMEOUT_SECONDS

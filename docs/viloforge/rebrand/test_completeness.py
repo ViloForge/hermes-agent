@@ -57,6 +57,13 @@ class ExcludesDoNotTouchAndKeeps(unittest.TestCase):
                   "keep this Hermes Agent line  # completeness-gate: keep"):
             self.assertEqual(_lines(s), [], s)
 
+    def test_intentional_keep_copyright_notice(self):
+        # Copyright notices are attribution (e.g. a vendored third-party plugin's
+        # MIT LICENSE) — never brand-rebranded, so not a residual.
+        for s in ("Copyright (c) 2026 Hermes Achievements contributors",
+                  "Copyright (C) 2025 Hermes Agent authors"):
+            self.assertEqual(_lines(s), [], s)
+
     def test_package_token_not_a_display_residual(self):
         # lowercase hermes-agent is a Tier-2 package token, not a \bHermes\b display token.
         self.assertEqual(_lines("pip install hermes-agent[all]"), [])
