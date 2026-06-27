@@ -120,7 +120,7 @@ def test_uninstall_gui_removes_only_gui_artifacts(tmp_path, monkeypatch):
 def test_uninstall_gui_removes_userdata(tmp_path, monkeypatch):
     hermes_home = tmp_path / ".hermes"
     _make_agent(hermes_home)
-    userdata = tmp_path / "Hermes-userdata"
+    userdata = tmp_path / "ViloForge-userdata"
     userdata.mkdir()
     (userdata / "connection.json").write_text("{}")
 
@@ -134,7 +134,7 @@ def test_uninstall_gui_removes_userdata(tmp_path, monkeypatch):
 def test_uninstall_gui_keeps_userdata_when_requested(tmp_path, monkeypatch):
     hermes_home = tmp_path / ".hermes"
     _make_agent(hermes_home)
-    userdata = tmp_path / "Hermes-userdata"
+    userdata = tmp_path / "ViloForge-userdata"
     userdata.mkdir()
 
     monkeypatch.setattr(gu, "packaged_gui_app_paths", lambda: [])
@@ -147,7 +147,7 @@ def test_uninstall_gui_keeps_userdata_when_requested(tmp_path, monkeypatch):
 def test_uninstall_gui_removes_packaged_bundle(tmp_path, monkeypatch):
     hermes_home = tmp_path / ".hermes"
     _make_agent(hermes_home)
-    bundle = tmp_path / "Hermes.app"
+    bundle = tmp_path / "ViloForge.app"
     (bundle / "Contents").mkdir(parents=True)
 
     monkeypatch.setattr(gu, "packaged_gui_app_paths", lambda: [bundle])

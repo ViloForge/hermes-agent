@@ -1,4 +1,4 @@
-"""Tests for ACP Registry metadata shipped with Hermes."""
+"""Tests for ACP Registry metadata shipped with ViloForge."""
 
 from __future__ import annotations
 

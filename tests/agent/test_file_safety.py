@@ -67,7 +67,7 @@ class TestEnvFileReadBlocking:
             assert error is None, f"{path} should be allowed"
 
     def test_allowed_hermes_env(self):
-        """Hermes' own .env inside HERMES_HOME is NOT blocked by this rule
+        """ViloForge' own .env inside HERMES_HOME is NOT blocked by this rule
         (it's handled by other mechanisms). Only project-local .env is blocked."""
         # Note: hermes internal .env is in ~/.hermes/.env which is NOT a project-local
         # path, but the basename check applies to ANY .env. This is intentional —
@@ -87,7 +87,7 @@ class TestEnvFileReadBlocking:
 
 
 class TestCacheFileReadBlocking:
-    """Internal Hermes cache files must remain blocked."""
+    """Internal ViloForge cache files must remain blocked."""
 
     def test_hub_index_cache_blocked(self, tmp_path):
         """Hub index-cache reads are blocked."""

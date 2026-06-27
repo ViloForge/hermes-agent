@@ -193,12 +193,12 @@ def test_gateway_cmd_script_uses_pythonw_without_replace_or_start_churn(monkeypa
     monkeypatch.setattr(
         gateway_windows,
         "_resolve_detached_python",
-        lambda exe: (exe.replace("python.exe", "pythonw.exe"), r"C:\\Hermes\\hermes-agent\\venv", []),
+        lambda exe: (exe.replace("python.exe", "pythonw.exe"), r"C:\\ViloForge\\hermes-agent\\venv", []),
     )
 
     content = gateway_windows._build_gateway_cmd_script(
-        r"C:\\Hermes\\hermes-agent\\venv\\Scripts\\python.exe",
-        r"C:\\Hermes\\hermes-agent",
+        r"C:\\ViloForge\\hermes-agent\\venv\\Scripts\\python.exe",
+        r"C:\\ViloForge\\hermes-agent",
         r"C:\\HermesHome\\profiles\\alice",
         "--profile alice",
     )
@@ -260,7 +260,7 @@ def test_elevated_gateway_command_uses_pythonw_hidden_console(monkeypatch):
     monkeypatch.setattr(gateway_windows, "_assert_windows", lambda: None)
     monkeypatch.setattr(gateway_windows, "_current_profile_cli_args", lambda: ["--profile", "alice"])
     monkeypatch.setattr(gateway_windows, "_derive_venv_pythonw", lambda exe: exe.replace("python.exe", "pythonw.exe"))
-    monkeypatch.setattr(gateway_windows.sys, "executable", r"C:\Hermes\venv\Scripts\python.exe")
+    monkeypatch.setattr(gateway_windows.sys, "executable", r"C:\ViloForge\venv\Scripts\python.exe")
     monkeypatch.setattr(gateway_windows.ctypes, "windll", FakeWindll(), raising=False)
 
     assert gateway_windows._launch_elevated_gateway_command("install", ["--start-now", "--elevated-handoff"])
@@ -328,8 +328,8 @@ def test_gateway_vbs_script_is_console_less(monkeypatch):
     )
     content = gateway_windows._build_gateway_vbs_script(
         r"C:\venv\Scripts\python.exe",
-        r"C:\Hermes",
-        r"C:\Hermes",
+        r"C:\ViloForge",
+        r"C:\ViloForge",
         "--profile work",
     )
     assert "cmd.exe" not in content.lower()

@@ -1,6 +1,6 @@
 """Contract tests for the Docker stage2 immutable install-tree policy.
 
-Hosted/container Hermes keeps user-writable state under HERMES_HOME
+Hosted/container ViloForge keeps user-writable state under HERMES_HOME
 (/opt/data). The installed source, venv, TUI bundle, and node_modules under
 /opt/hermes must remain root-owned/non-writable by the runtime hermes user so
 an agent session cannot self-modify the installation and brick the gateway.

@@ -394,10 +394,10 @@ async def test_handle_thread_create_slash_dispatches_session_when_message_provid
 
     adapter._dispatch_thread_session = AsyncMock()
 
-    await adapter._handle_thread_create_slash(interaction, "Planning", "Hello Hermes", 1440)
+    await adapter._handle_thread_create_slash(interaction, "Planning", "Hello ViloForge", 1440)
 
     adapter._dispatch_thread_session.assert_awaited_once_with(
-        interaction, "555", "Planning", "Hello Hermes",
+        interaction, "555", "Planning", "Hello ViloForge",
     )
 
 

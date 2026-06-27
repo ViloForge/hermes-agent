@@ -249,7 +249,7 @@ def test_mcp_tokens_dir_itself_blocked(fake_home):
 def test_identically_named_hermes_files_outside_home_not_blocked(
     fake_home, tmp_path
 ):
-    """Hermes-specific filenames (``auth.json``, ``mcp-tokens/``, ``google_oauth.json``)
+    """ViloForge-specific filenames (``auth.json``, ``mcp-tokens/``, ``google_oauth.json``)
     outside HERMES_HOME must remain readable — the gate is per-location for
     those, not per-filename. ``.env`` is the exception: it's blocked anywhere
     on disk (see test_project_local_env_blocked) because the basename always
