@@ -27,7 +27,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE_FILE="$REPO_DIR/docker-compose.preview.yml"
 SECRETS_FILE="${VILOFORGE_PREVIEW_ENV:-$REPO_DIR/.preview.env}"
 URL="http://localhost:9119"
-PUBLISHED_IMAGE="ghcr.io/viloforge/hermes-agent:preview"
+PUBLISHED_IMAGE="ghcr.io/viloforge/viloforge-agent:preview"
 LOCAL_IMAGE="viloforge-agent:preview-local"   # tag for `--build` (working-tree image)
 
 # ---- docker compose v2 (plugin) with a legacy fallback -------------------------
