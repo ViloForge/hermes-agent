@@ -246,9 +246,9 @@ class TestActiveVenvMarkerStripping:
     VIRTUAL_ENV (and possibly CONDA_PREFIX). If those leak into commands the
     agent runs against ANOTHER Python project, ``uv``/``poetry`` treat the
     inherited value as the active environment and build that project's deps
-    into the Hermes venv path instead of the project's own ``.venv`` —
-    silently clobbering the Hermes environment (and, when the other project
-    pins a different Python, breaking the gateway outright). The Hermes venv
+    into the ViloForge venv path instead of the project's own ``.venv`` —
+    silently clobbering the ViloForge environment (and, when the other project
+    pins a different Python, breaking the gateway outright). The ViloForge venv
     stays reachable via PATH, so stripping the markers is safe.
     """
 
