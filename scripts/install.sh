@@ -1579,8 +1579,25 @@ EOF
     chmod +x "$command_link_dir/hermes"
     log_success "Installed hermes launcher → $command_link_display_dir/hermes"
     # Tier-2 (ADR-0003 D1/D2): expose the new `viloforge` command alongside the
-    # deprecated `hermes` alias — same shim (both resolve to hermes_cli.main:main).
-    ln -sf hermes "$command_link_dir/viloforge"
+    # deprecated `hermes` alias. Give it its OWN shim that execs the venv's
+    # `viloforge` console script (sibling of `hermes` in the same bin dir) so the
+    # invoked name is `viloforge` — argparse then shows `usage: viloforge` rather
+    # than the old `hermes` (a plain symlink to the hermes shim would exec the
+    # `hermes` binary and mislabel it). Falls back to a symlink if the viloforge
+    # console script is somehow absent.
+    local viloforge_bin="${HERMES_BIN%hermes}viloforge"
+    if [ -x "$viloforge_bin" ]; then
+        rm -f "$command_link_dir/viloforge"
+        cat > "$command_link_dir/viloforge" <<EOF
+#!/usr/bin/env bash
+unset PYTHONPATH
+unset PYTHONHOME
+exec "$viloforge_bin" "\$@"
+EOF
+        chmod +x "$command_link_dir/viloforge"
+    else
+        ln -sf hermes "$command_link_dir/viloforge"
+    fi
     log_success "Installed viloforge launcher → $command_link_display_dir/viloforge"
 
     if [ "$DISTRO" = "termux" ]; then

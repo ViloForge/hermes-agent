@@ -11,6 +11,26 @@ because its dispatch is tightly coupled to module-level ``cmd_*`` functions.
 """
 
 import argparse
+import os
+import sys
+
+
+def _invoked_prog() -> str:
+    """Return the command name the user actually invoked, for argparse ``prog``.
+
+    Tier-2 (ADR-0003 D1) added ``viloforge`` as the primary console command
+    alongside the deprecated ``hermes`` alias (D2). The displayed usage/help/error
+    ``prog`` should reflect whichever was run rather than a hardcoded ``hermes`` —
+    so ``viloforge --help`` reads ``usage: viloforge``. We only honor the known
+    console-script names (never a raw ``python -m`` path or stray ``argv[0]``),
+    defaulting to ``hermes``. This does not rename the deferred ``hermes_cli``
+    skeleton (ADR-0002) — it only chooses the displayed label.
+    """
+    name = os.path.basename((sys.argv[0] or "").strip())
+    for ext in (".exe", ".py"):
+        if name.endswith(ext):
+            name = name[: -len(ext)]
+    return name if name in ("viloforge", "hermes", "viloforge-agent", "hermes-agent") else "hermes"
 
 
 # `--profile` / `-p` is consumed by ``main._apply_profile_override`` before
@@ -89,7 +109,7 @@ def build_top_level_parser():
     other subparsers via ``subparsers.add_parser(...)``.
     """
     parser = argparse.ArgumentParser(
-        prog="hermes",
+        prog=_invoked_prog(),
         description="ViloForge Agent - AI assistant with tool-calling capabilities",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=_EPILOGUE,
