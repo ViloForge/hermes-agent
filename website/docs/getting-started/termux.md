@@ -80,7 +80,7 @@ Why these packages?
 ### 2. Clone ViloForge
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
+git clone https://github.com/ViloForge/hermes-agent.git
 cd hermes-agent
 ```
 

@@ -43,8 +43,8 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 # Configuration
-REPO_URL_SSH="git@github.com:NousResearch/hermes-agent.git"
-REPO_URL_HTTPS="https://github.com/NousResearch/hermes-agent.git"
+REPO_URL_SSH="git@github.com:ViloForge/hermes-agent.git"
+REPO_URL_HTTPS="https://github.com/ViloForge/hermes-agent.git"
 HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
 # INSTALL_DIR is resolved AFTER arg parsing and OS detection so we can pick an
 # FHS-style layout for root installs.  Track whether the user gave us an
@@ -1578,6 +1578,10 @@ exec "$HERMES_BIN" "\$@"
 EOF
     chmod +x "$command_link_dir/hermes"
     log_success "Installed hermes launcher → $command_link_display_dir/hermes"
+    # Tier-2 (ADR-0003 D1/D2): expose the new `viloforge` command alongside the
+    # deprecated `hermes` alias — same shim (both resolve to hermes_cli.main:main).
+    ln -sf hermes "$command_link_dir/viloforge"
+    log_success "Installed viloforge launcher → $command_link_display_dir/viloforge"
 
     if [ "$DISTRO" = "termux" ]; then
         export PATH="$command_link_dir:$PATH"

@@ -65,7 +65,7 @@ scripts/run_tests.sh
 只有在你明确不想使用 ViloForge managed install layout 时才使用这种方式（例如容器或 CI job 里的临时 clone）。如果这样安装，请确保运行的是这个 venv 里的 `hermes` entrypoint；运行系统 `python3 -m hermes_cli.main` 可能会加载无关的系统 Python 包。
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
+git clone https://github.com/ViloForge/hermes-agent.git
 cd hermes-agent
 
 # 使用 Python 3.11 创建虚拟环境
