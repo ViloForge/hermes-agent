@@ -153,6 +153,22 @@ proving wrong mid-execution counts as an **unforeseen issue → halt & surface**
   `/usr/local/lib/hermes-agent` stay (under the Tier-3 `~/.hermes` home; renaming
   breaks in-place upgrades). Revisit with Tier-3.
 
+- **D-5 — LOCKED (2026-06-28, surfaced during Slice 2a): the lowercase
+  `hermes-agent` *runtime* identifier is DEFERRED (Tier-3/wire-coupled).**
+  Renaming the pyproject `name` surfaced that `hermes-agent` is a ~179-site
+  runtime identifier, not just the package declaration. Tier-2 renames the
+  **declaration** (pyproject name/scripts/extras, setup.py build prefix, Docker/
+  npm/CI) and **fixes the 3 `importlib.metadata.version("hermes-agent")` self-
+  lookups** (api_server, qqbot/utils, codex_app_server_session → `viloforge-agent`,
+  which otherwise degrade to a fallback version). Everything else stays
+  `hermes-agent`: the `~/.hermes/hermes-agent` install/repo dirs (also D-4); our
+  runtime ids (`api_server` `platform`, `config` `container_name` default); and the
+  outbound **wire** ids (xAI `referrer`, Nous `nous_client`, bitwarden
+  `User-Agent`, copilot ACP `name`, qqbot `$browser`/`$device`) — same leash/
+  wire-contract rationale as the lowercase `hermes` command, `~/.hermes`, and the
+  `X-Hermes-*` headers. The pip/uv self-update-by-name path keeps `hermes-agent`
+  and is moot anyway (we don't publish to PyPI). Revisit with Tier-3.
+
 ---
 
 ## 4. Execution runbook — autonomous, step-by-step
