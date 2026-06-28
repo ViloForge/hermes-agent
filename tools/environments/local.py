@@ -197,10 +197,10 @@ _HERMES_PROVIDER_ENV_BLOCKLIST = _build_provider_env_blocklist()
 # VIRTUAL_ENV (and possibly CONDA_PREFIX). If those leak into commands the
 # agent runs against OTHER Python projects, tools like ``uv``/``poetry`` treat
 # the inherited value as the active environment and build/sync that other
-# project's dependencies into the Hermes venv path instead of the project's own
-# ``.venv`` — silently clobbering the Hermes environment (e.g. a project pinned
+# project's dependencies into the ViloForge venv path instead of the project's own
+# ``.venv`` — silently clobbering the ViloForge environment (e.g. a project pinned
 # to a different Python version overwrites it and breaks the gateway). The
-# Hermes venv stays reachable via PATH (its bin dir is first), so stripping
+# ViloForge venv stays reachable via PATH (its bin dir is first), so stripping
 # these markers is safe and only prevents the cross-project clobber (#23473).
 _ACTIVE_VENV_MARKER_VARS = ("VIRTUAL_ENV", "CONDA_PREFIX")
 
@@ -253,7 +253,7 @@ def _sanitize_subprocess_env(base_env: dict | None, extra_env: dict | None = Non
 # Tier-1 secrets: stripped from EVERY spawned subprocess unconditionally —
 # even when the caller opts into credential inheritance for a model-driving
 # CLI (claude / codex / gemini).  These are not LLM provider credentials; no
-# legitimate child Hermes spawns needs them, and they are the highest-value
+# legitimate child ViloForge spawns needs them, and they are the highest-value
 # secrets to keep out of a compromised dependency's reach (gateway bot tokens,
 # GitHub auth, remote-compute tokens, dashboard session secret).  The set is a
 # narrow subset of _HERMES_PROVIDER_ENV_BLOCKLIST; provider keys are handled by
@@ -299,7 +299,7 @@ def hermes_subprocess_env(*, inherit_credentials: bool = False) -> dict[str, str
 
     * **Tier 1 (always):** ``_ALWAYS_STRIP_KEYS`` — gateway bot tokens, GitHub
       auth, and remote-compute secrets are removed regardless of
-      ``inherit_credentials``.  No child Hermes spawns legitimately needs them.
+      ``inherit_credentials``.  No child ViloForge spawns legitimately needs them.
     * **Tier 2 (conditional):** the rest of ``_HERMES_PROVIDER_ENV_BLOCKLIST``
       (LLM provider API keys, tool secrets) is removed unless the caller passes
       ``inherit_credentials=True``.

@@ -73,7 +73,7 @@ from tools.environments.local import hermes_subprocess_env
 # Browser-specific tool keys passed through to the agent-browser subprocess
 # AFTER credential stripping.  agent-browser is a Node process loading npm
 # deps; handing it the full operator keyring (#29157 / GHSA-m4m8-xjp4-5rmm)
-# means a compromised transitive dependency could read every Hermes secret
+# means a compromised transitive dependency could read every ViloForge secret
 # straight out of process.env.  Strip by default, then re-add only the
 # browser-backend keys the worker legitimately needs.
 _BROWSER_PASSTHROUGH_KEYS: tuple[str, ...] = (

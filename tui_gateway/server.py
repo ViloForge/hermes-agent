@@ -265,7 +265,7 @@ class _SlashWorker:
             text=True,
             bufsize=1,
             cwd=os.getcwd(),
-            # slash_worker runs the Hermes agent → needs provider credentials.
+            # slash_worker runs the ViloForge agent → needs provider credentials.
             # Tier-1 secrets (gateway/GitHub/infra) are still stripped (#29157).
             env=hermes_subprocess_env(inherit_credentials=True),
         )
