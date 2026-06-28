@@ -75,7 +75,7 @@ system `python3 -m hermes_cli.main` can pick up unrelated system Python
 packages.
 
 ```bash
-git clone https://github.com/NousResearch/hermes-agent.git
+git clone https://github.com/ViloForge/hermes-agent.git
 cd hermes-agent
 
 # Create venv with Python 3.11
