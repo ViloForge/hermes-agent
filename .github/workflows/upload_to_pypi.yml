@@ -24,6 +24,10 @@ concurrency:
 
 jobs:
   build:
+    # Fork: never publish to PyPI (ADR-0003 D1 — GHCR image only). Gating this job
+    # neutralizes the whole pipeline (publish/sign `needs: build`). Mirrors
+    # docker-publish.yml; kept reimplementable per ADR-0002.
+    if: github.repository == 'NousResearch/hermes-agent'
     name: Build distribution 📦
     runs-on: ubuntu-latest
     steps:
