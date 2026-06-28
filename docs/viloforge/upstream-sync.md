@@ -43,7 +43,7 @@ base).
 | Date | Studied through SHA | Reimplemented | Skipped | Security items | Cut-trigger check |
 | --- | --- | --- | --- | --- | --- |
 | 2026-06-24 | `89540d592` (synced via PR #4, merge commit `be87d31b3`) | — (one-time pre-rebrand sync — adopted upstream HEAD wholesale, nothing to selectively reimplement) | — | none flagged in the synced range | leash on (rebrand not started) |
-| 2026-06-28 | `0800f1c28` (reviewed `89540d592..0800f1c28`, **not merged** — selective port) | pending operator decision (Tier-A port batch below) | product-surface PRs (whatsapp queue, desktop UI, TUI billing, relay product features), test/CI/AUTHOR_MAP chores | **18 flagged** — see triage below; 1 disclosed advisory (GHSA-rxqh-5572-8m77, email From: spoofing) | **leash STAYS ON** — upstream relevance high (see §cut-trigger) |
+| 2026-06-28 | `0800f1c28` (reviewed `89540d592..0800f1c28`, **not merged** — selective port) | **Tier-A ported on `sync-sweep`** (9 commits, `cherry-pick -x`, authorship preserved): `85e084d60` email GHSA, `9c6229ce2` cred-safe subprocess env (+`dbbf102b8` prereq), `c15945655` terminal cwd, `fbfccbb3e` cron unicode, `190e1ffac` dotted-key redact, `8ff426e53`+`6c58878e7` browser typed-text redact, `6305ac0e4` MCP OSV preflight. 384 scoped tests green. | product-surface PRs (whatsapp queue, desktop UI, TUI billing, relay product features), test/CI/AUTHOR_MAP chores; **Tier-B backlog deferred** (port on need) | **18 flagged** — see triage below; 1 disclosed advisory (GHSA-rxqh-5572-8m77, email From: spoofing) — **ported** | **leash STAYS ON** — upstream relevance high (see §cut-trigger) |
 
 ## Post-sync snapshot — 2026-06-24
 
@@ -124,8 +124,15 @@ test-only commits.
 
 ## Pending action
 
-- **Port Tier-A security batch** (8 fixes / 9 commits above) via `cherry-pick -x`
-  onto a branch → PR → green CI → human-gated merge. Operator decision pending.
+- **Port Tier-A security batch** — ✅ **done** on branch `sync-sweep` (9 commits incl.
+  the `dbbf102b8` prereq; per-task branches `--no-ff`-merged; each scoped-tested; 384
+  consolidated tests green). Notable reimplements: `9c6229ce2` needed `dbbf102b8`'s
+  `_ACTIVE_VENV_MARKER_VARS` (ported first) and three conflict sites where upstream
+  context referenced intermediate-commit symbols our tree lacks (`git_probe`,
+  `windows_hide_flags`, the `target`/`constraints` lazy-install machinery) — dropped,
+  not blindly taken. Awaiting **HITL review + merge `sync-sweep` → `main`** (T9).
+- **Tier-B backlog** (relay authz, dashboard-auth, MCP OAuth, tirith DoS,
+  credential-pool robustness) — deferred; port on need at a future cadence.
 - **Re-run rebrand blast-radius analysis + regenerate the knowledge graph** — both were
   computed at the stale base `bc5ae3919` and are invalidated by the sync. Do before
   trusting any count or the graph for rebrand sequencing.
