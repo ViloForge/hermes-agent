@@ -12,10 +12,10 @@
 #   docker compose -f docker-compose.preview.yml down -v   # stop + wipe the throwaway data
 #
 # Scope: this is the Tier-1 DISPLAY brand (banner / dashboard / docs say
-# "ViloForge") on the still-`hermes` skeleton — the package is still
-# `hermes-agent`, the command is still `hermes`, and the image path is still
-# `.../hermes-agent`. Tier 2 is what renames those; this preview is exactly the
-# state to evaluate before deciding it.
+# "ViloForge"). Tier-2 has renamed the package (`viloforge-agent`), the image
+# (`ghcr.io/viloforge/viloforge-agent`), and added the `viloforge` command
+# (the old `hermes` command + `HERMES_*`/`hermes_cli` skeleton stay as
+# deprecated aliases per ADR-0003 D2 / the ADR-0002 Tier-3 leash).
 #
 # Data is an isolated, throwaway named volume (NOT your real ~/.hermes) so the
 # preview can't touch your real config / memory. `down -v` removes it.
@@ -35,7 +35,7 @@ services:
     # Published GHCR image by default; `./preview.sh start --build` sets
     # PREVIEW_IMAGE to a locally-built tag so the preview reflects your
     # working tree.
-    image: ${PREVIEW_IMAGE:-ghcr.io/viloforge/hermes-agent:preview}
+    image: ${PREVIEW_IMAGE:-ghcr.io/viloforge/viloforge-agent:preview}
     container_name: viloforge-preview
     restart: unless-stopped
     # Host networking matches the project's default compose; the dashboard binds
